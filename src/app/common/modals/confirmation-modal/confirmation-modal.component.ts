@@ -1,6 +1,9 @@
+/* eslint-disable prettier/prettier */
+/* eslint-disable @angular-eslint/component-selector */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Component, OnInit, Input, Inject} from '@angular/core';
-import { alertService } from 'src/app/ajs-upgraded-providers';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { AlertService } from '../../services/alert.service';
+import { MatDialogRef } from '@angular/material/dialog';
 
 @Component({
   selector: 'confirmation-modal',
@@ -13,9 +16,8 @@ export class ConfirmationModalComponent implements OnInit {
   @Input() action: () => void;
 
   constructor(
-    @Inject(alertService) private alertService: any,
+    @Inject(AlertService) private alertService: any,
     public dialogRef: MatDialogRef<ConfirmationModalComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any,
   ) {}
 
   ngOnInit(): void {
@@ -23,19 +25,17 @@ export class ConfirmationModalComponent implements OnInit {
   }
 
   public confirmAction() {
-    console.log('confirmAction');
     if (typeof this.action === 'function') {
       this.action();
     } else {
-      this.alertService.add("danger", `${this.title} action failed`, 3000);
+      this.alertService.error(`${this.title} action failed.`);
     }
-    /** note - page reload after closing **/
+
     this.dialogRef.close();
   }
 
   public cancelAction() {
-    console.log('cancelAction');
-    this.alertService.add("info", `${this.title} action cancelled`, 3000);
+    this.alertService.success(`${this.title} action cancelled.`);
     this.dialogRef.close();
   }
 }
