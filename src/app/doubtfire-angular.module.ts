@@ -93,6 +93,7 @@ import {ExtensionCommentComponent} from './tasks/task-comments-viewer/extension-
 import {CampusListComponent} from './admin/institution-settings/campuses/campus-list/campus-list.component';
 import {ExtensionModalComponent} from './common/modals/extension-modal/extension-modal.component';
 import {CalendarModalComponent} from './common/modals/calendar-modal/calendar-modal.component';
+import { ConfirmationModalComponent } from './common/modals/confirmation-modal/confirmation-modal.component';
 import {MatRadioModule} from '@angular/material/radio';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {MAT_DATE_LOCALE, MatOptionModule} from '@angular/material/core';
@@ -246,6 +247,7 @@ import {GradeService} from './common/services/grade.service';
     OverseerImageListComponent,
     ExtensionModalComponent,
     CalendarModalComponent,
+    ConfirmationModalComponent,
     InstitutionSettingsComponent,
     HomeComponent,
     CommentBubbleActionComponent,
