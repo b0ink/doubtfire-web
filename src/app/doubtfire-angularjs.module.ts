@@ -119,7 +119,6 @@ import 'build/src/app/units/states/analytics/analytics.js';
 import 'build/src/app/common/filters/filters.js';
 import 'build/src/app/common/content-editable/content-editable.js';
 import 'build/src/app/common/modals/confirmation-modal/confirmation-modal.js';
-import 'build/src/app/common/modals/comments-modal/comments-modal.js';
 import 'build/src/app/common/modals/csv-result-modal/csv-result-modal.js';
 import 'build/src/app/common/modals/modals.js';
 import 'build/src/app/common/grade-icon/grade-icon.js';
@@ -220,11 +219,12 @@ import {FUnitTaskListComponent} from './units/states/tasks/viewer/directives/f-u
 import {FTaskDetailsViewComponent} from './units/states/tasks/viewer/directives/f-task-details-view/f-task-details-view.component';
 import {FTaskSheetViewComponent} from './units/states/tasks/viewer/directives/f-task-sheet-view/f-task-sheet-view.component';
 import {TasksViewerComponent} from './units/states/tasks/tasks-viewer/tasks-viewer.component';
-
 import {FUnitsComponent} from './admin/states/f-units/f-units.component';
 import {MarkedPipe} from './common/pipes/marked.pipe';
 import {AlertService} from './common/services/alert.service';
 import {GradeService} from './common/services/grade.service';
+import {CommentsModalService} from './common/modals/comments-modal/comments-modal.service';
+
 export const DoubtfireAngularJSModule = angular.module('doubtfire', [
   'doubtfire.config',
   'doubtfire.sessions',
@@ -306,6 +306,7 @@ DoubtfireAngularJSModule.factory(
   downgradeInjectable(EditProfileDialogService),
 );
 DoubtfireAngularJSModule.factory('CreateNewUnitModal', downgradeInjectable(CreateNewUnitModal));
+DoubtfireAngularJSModule.factory('CommentsModal', downgradeInjectable(CommentsModalService));
 
 // directive -> component
 DoubtfireAngularJSModule.directive(
