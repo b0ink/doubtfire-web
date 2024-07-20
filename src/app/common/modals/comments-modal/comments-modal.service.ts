@@ -12,7 +12,7 @@ export class CommentsModalService {
     this.dialog.open(CommentsModalComponent, {
       data: {commentResourceUrl, commentType},
       width: '100%',
-      maxWidth: '800px',
+      maxWidth: '900px',
     });
   }
 }
