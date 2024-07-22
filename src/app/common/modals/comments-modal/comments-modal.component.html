@@ -1,7 +1,7 @@
 <div class="modal-comment">
-  @if (commentType === 'image') {
+  @if (taskComment.commentType === 'image') {
     <img class="image-comment" [src]="commentResourceUrl" />
-  } @else if (commentType === 'pdf') {
+  } @else if (taskComment.commentType === 'pdf') {
     <iframe class="pdf-comment" [src]="commentResourceUrl | safe" type="application/pdf"></iframe>
   }
 </div>
