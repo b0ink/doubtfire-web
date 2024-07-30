@@ -1,7 +1,11 @@
-<div class="modal-comment">
+<div class="p-6">
   @if (taskComment.commentType === 'image') {
-    <img class="image-comment" [src]="commentResourceUrl" />
+    <img class="w-full h-full p-0 rounded border-none" [src]="commentResourceUrl" />
   } @else if (taskComment.commentType === 'pdf') {
-    <iframe class="pdf-comment" [src]="commentResourceUrl | safe" type="application/pdf"></iframe>
+    <iframe
+      class="w-full h-[80vh]"
+      [src]="commentResourceUrl | safe"
+      type="application/pdf"
+    ></iframe>
   }
 </div>
