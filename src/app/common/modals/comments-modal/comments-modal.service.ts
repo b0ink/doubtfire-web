@@ -14,7 +14,7 @@ export class CommentsModalService {
       data: {commentResourceUrl, comment},
       width: '100%',
       maxWidth: '900px',
-      panelClass: 'overflow-y-scroll',
+      panelClass: 'overflow-y-auto',
     });
   }
 }
