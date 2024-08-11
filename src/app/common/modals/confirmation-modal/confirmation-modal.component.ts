@@ -1,9 +1,12 @@
-/* eslint-disable prettier/prettier */
-/* eslint-disable @angular-eslint/component-selector */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { Component, OnInit, Input, Inject} from '@angular/core';
-import { AlertService } from '../../services/alert.service';
-import { MatDialogRef } from '@angular/material/dialog';
+import {Component, OnInit, Input, Inject} from '@angular/core';
+import {AlertService} from '../../services/alert.service';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+
+export interface ConfirmationModalData {
+  title: string;
+  message: string;
+  action?: any;
+}
 
 @Component({
   selector: 'confirmation-modal',
@@ -16,12 +19,16 @@ export class ConfirmationModalComponent implements OnInit {
   @Input() action: () => void;
 
   constructor(
-    @Inject(AlertService) private alertService: any,
+    @Inject(AlertService) private alertService: AlertService,
+    @Inject(MAT_DIALOG_DATA) public data: ConfirmationModalData,
+
     public dialogRef: MatDialogRef<ConfirmationModalComponent>,
   ) {}
 
   ngOnInit(): void {
-    console.log('confirmation-model ngOnInit()');
+    this.title = this.data.title;
+    this.message = this.data.message;
+    this.action = this.data.action;
   }
 
   public confirmAction() {
@@ -30,7 +37,6 @@ export class ConfirmationModalComponent implements OnInit {
     } else {
       this.alertService.error(`${this.title} action failed.`);
     }
-
     this.dialogRef.close();
   }
 
