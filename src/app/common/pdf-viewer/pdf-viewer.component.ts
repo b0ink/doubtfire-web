@@ -24,6 +24,8 @@ export class fPdfViewerComponent implements OnDestroy, OnChanges, AfterViewInit 
   public useNativePdfViewer = false;
 
   @Input() pdfUrl: string;
+  @Input() startPage: number = 1;
+
   @ViewChild(PdfViewerComponent) private pdfComponent: PdfViewerComponent;
   pdfSearchString: string;
   zoomValue = 1;
@@ -75,6 +77,14 @@ export class fPdfViewerComponent implements OnDestroy, OnChanges, AfterViewInit 
     });
   }
 
+  scrollToPage(pageNumber: number) {
+    if (pageNumber <= this.pdfComponent.pdfViewer.pagesCount) {
+      this.pdfComponent.pdfViewer.scrollPageIntoView({
+        pageNumber,
+      });
+    }
+  }
+
   public zoomIn() {
     if (this.zoomValue < 2.5) {
       this.zoomValue += 0.1;
@@ -110,5 +120,12 @@ export class fPdfViewerComponent implements OnDestroy, OnChanges, AfterViewInit 
   onLoaded() {
     this.loaded = true;
     window.dispatchEvent(new Event('resize'));
+  }
+
+  onPageRendered() {
+    this.loaded = true;
+    if (this.startPage > 1) {
+      this.scrollToPage(this.startPage);
+    }
   }
 }
