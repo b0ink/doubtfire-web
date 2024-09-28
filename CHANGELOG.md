@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [8.0.28](https://github.com/macite/doubtfire-deploy/compare/v8.0.23...v8.0.28) (2024-09-05)
+
+
+### Features
+
+* add support for the view language ([b4b3654](https://github.com/macite/doubtfire-deploy/commit/b4b36541943232f7df3ee4888bf4ca46c4c04018))
+
 ### [8.0.23](https://github.com/macite/doubtfire-deploy/compare/v8.0.22...v8.0.23) (2024-08-02)
 
 
