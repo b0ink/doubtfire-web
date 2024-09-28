@@ -2,10 +2,6 @@
   @if (taskComment.commentType === 'image') {
     <img class="w-full h-full p-0 rounded border-none" [src]="commentResourceUrl" />
   } @else if (taskComment.commentType === 'pdf') {
-    <iframe
-      class="w-full h-[80vh]"
-      [src]="commentResourceUrl | safe"
-      type="application/pdf"
-    ></iframe>
+    <f-pdf-viewer class="w-full h-[85vh] block" [pdfUrl]="commentResourceUrl"> </f-pdf-viewer>
   }
 </div>
