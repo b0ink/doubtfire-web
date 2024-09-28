@@ -3,11 +3,10 @@
     <div class="panel-title">
       <span ng-hide="tutor || showFooter">{{task.definition.name}}</span>
       <span ng-show="tutor || showFooter" style="display: inline-flex">{{task.definition.name}} </span>
-
       <div
         class="dropdown pull-right"
         dropdown
-        ng-show="task.hasPdf || task.definition.hasTaskSheet || overseerEnabled.value"
+        ng-show="task.hasPdf || task.definition.hasTaskSheet || overseerEnabled()"
       >
         <button class="btn btn-default dropdown-toggle" dropdown-toggle>
           <i class="fa fa-search"></i>
@@ -30,8 +29,8 @@
           <li ng-show="task.hasPdf">
             <a ng-click="downloadSubmittedFiles()">Download Submitted Files</a>
           </li>
-          <li ng-if="overseerEnabled">
-            <a ng-click="showSubmissionHistoryModal()">View Submission History</a>
+          <li ng-if="overseerEnabled()">
+            <a ng-click="showSubmissionHistoryModal()">Execution History</a>
           </li>
         </ul>
       </div>
