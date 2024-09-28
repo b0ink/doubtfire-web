@@ -95,8 +95,13 @@ import {ExtensionModalComponent} from './common/modals/extension-modal/extension
 import {CalendarModalComponent} from './common/modals/calendar-modal/calendar-modal.component';
 import {MatRadioModule} from '@angular/material/radio';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
-import {MAT_DATE_LOCALE, MatOptionModule} from '@angular/material/core';
+import {DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, MatOptionModule} from '@angular/material/core';
 import {MatDatepickerModule} from '@angular/material/datepicker';
+
+import { DateFnsAdapter, MAT_DATE_FNS_FORMATS } from '@angular/material-date-fns-adapter';
+import { enAU } from 'date-fns/locale';
+
+
 import {doubtfireStates} from './doubtfire.states';
 import {MatTableModule} from '@angular/material/table';
 import {MatTabsModule} from '@angular/material/tabs';
@@ -225,6 +230,19 @@ import {TasksViewerComponent} from './units/states/tasks/tasks-viewer/tasks-view
 import {UnitCodeComponent} from './common/unit-code/unit-code.component';
 import {GradeService} from './common/services/grade.service';
 import {CommentsModalComponent} from './common/modals/comments-modal/comments-modal.component';
+
+// See https://stackoverflow.com/questions/55721254/how-to-change-mat-datepicker-date-format-to-dd-mm-yyyy-in-simplest-way/58189036#58189036
+const MY_DATE_FORMAT = {
+  parse: {
+    dateInput: 'dd/MM/yyyy', // this is how your date will be parsed from Input
+  },
+  display: {
+    dateInput: 'dd/MM/yyyy', // this is how your date will get displayed on the Input
+    monthYearLabel: 'MMMM yyyy',
+    dateA11yLabel: 'do MMMM yyyy',
+    monthYearA11yLabel: 'MMMM yyyy',
+  },
+};
 
 @NgModule({
   // Components we declare
@@ -370,7 +388,9 @@ import {CommentsModalComponent} from './common/modals/comments-modal/comments-mo
     dateServiceProvider,
     CsvUploadModalProvider,
     CsvResultModalProvider,
-    {provide: MAT_DATE_LOCALE, useValue: 'en-AU'},
+    {provide: MAT_DATE_LOCALE, useValue: enAU},
+    {provide: DateAdapter, useClass: DateFnsAdapter, deps: [MAT_DATE_LOCALE]},
+    {provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMAT},
     UnitStudentEnrolmentModalProvider,
     TaskCommentService,
     AudioRecorderProvider,

@@ -21,7 +21,7 @@ export class TaskDefinition extends Entity {
   targetDate: Date;
   dueDate: Date;
   startDate: Date;
-  uploadRequirements: UploadRequirement[];
+  uploadRequirements: UploadRequirement[] = [];
   tutorialStream: TutorialStream = null;
   plagiarismChecks: SimilarityCheck[] = [];
   plagiarismReportUrl: string;

@@ -25,7 +25,7 @@ import {UserService} from 'src/app/api/services/user.service';
   templateUrl: './inbox.component.html',
   styleUrls: ['./inbox.component.scss'],
 })
-export class InboxComponent implements OnInit, AfterViewInit {
+export class InboxComponent implements OnInit {
   @Input() unit: Unit;
   @Input() unitRole: UnitRole;
   @Input() taskData: {selectedTask: Task; any};
@@ -67,11 +67,11 @@ export class InboxComponent implements OnInit, AfterViewInit {
       this.taskSelected = task != null;
     });
   }
-  ngAfterViewInit(): void {
-    console.log('ngAfterViewInit');
-    const markers = ['Admin', 'Convenor', 'Tutor', 'Student'];
 
-    if (markers.includes(this.userService.currentUser?.role)) {
+  ngOnInit(): void {
+    const registeredHotkeys = this.hotkeys.getHotkeys().map((hotkey) => hotkey.keys);
+
+    if (!registeredHotkeys.includes('shift.?')) {
       this.hotkeys.registerHelpModal(() => {
         const ref = this.dialog.open(HotkeysHelpComponent, {
           // width: '250px',
@@ -80,9 +80,7 @@ export class InboxComponent implements OnInit, AfterViewInit {
         ref.componentInstance.dismiss.subscribe(() => ref.close());
       });
     }
-  }
 
-  ngOnInit(): void {
     // this.hotkeys
     //   .addShortcut({
     //     keys: 'control.c',

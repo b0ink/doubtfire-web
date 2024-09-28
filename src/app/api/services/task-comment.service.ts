@@ -41,7 +41,7 @@ export class TaskCommentService extends CachedEntityService<TaskComment> {
       {
         keys: 'author',
         toEntityFn: (data: object, key: string, comment: TaskComment) => {
-          const user = this.userService.cache.getOrCreate(data[key].id, userService, data[key]);
+          const user = this.userService.cache.getOrCreate(data[key]?.id, userService, data[key]);
           comment.initials = `${user.firstName[0]}${user.lastName[0]}`.toUpperCase();
           return user;
         }
@@ -49,7 +49,7 @@ export class TaskCommentService extends CachedEntityService<TaskComment> {
       {
         keys: 'recipient',
         toEntityFn: (data: object, key: string, comment: TaskComment) => {
-          return this.userService.cache.getOrCreate(data[key].id, userService, data[key]);
+          return this.userService.cache.getOrCreate(data[key]?.id, userService, data[key]);
         }
       },
       'recipientReadTime',

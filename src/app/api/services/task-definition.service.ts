@@ -41,7 +41,7 @@ export class TaskDefinitionService extends CachedEntityService<TaskDefinition> {
         keys: 'uploadRequirements',
         toJsonFn: (taskDef: TaskDefinition, key: string) => {
           return JSON.stringify(
-            taskDef.uploadRequirements.map((upreq) => {
+            taskDef.uploadRequirements?.map((upreq) => {
               return {
                 key: upreq.key,
                 name: upreq.name,
@@ -49,13 +49,19 @@ export class TaskDefinitionService extends CachedEntityService<TaskDefinition> {
                 tii_check: upreq.tiiCheck,
                 tii_pct: upreq.tiiPct,
               };
-            })
+            }),
           );
         },
         toEntityFn: (data: object, key: string, taskDef: TaskDefinition, params?: any) => {
           return (
-            data[key] as Array<{ key: string; name: string; type: string; tii_check: boolean; tii_pct: number }>
-          ).map((upreq) => {
+            data[key] as Array<{
+              key: string;
+              name: string;
+              type: string;
+              tii_check: boolean;
+              tii_pct: number;
+            }>
+          )?.map((upreq) => {
             return {
               key: upreq.key,
               name: upreq.name,
