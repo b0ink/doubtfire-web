@@ -236,6 +236,7 @@ import {ScormPlayerComponent} from './common/scorm-player/scorm-player.component
 import {ScormAdapterService} from './api/services/scorm-adapter.service';
 import {ScormCommentComponent} from './tasks/task-comments-viewer/scorm-comment/scorm-comment.component';
 import {TaskScormCardComponent} from './projects/states/dashboard/directives/task-dashboard/directives/task-scorm-card/task-scorm-card.component';
+import {TaskTutorialEnrolmentCardComponent} from './projects/states/dashboard/directives/task-dashboard/directives/task-tutorial-enrolment-card/task-tutorial-enrolment-card.component';
 import {TestAttemptService} from './api/services/test-attempt.service';
 import {ScormExtensionCommentComponent} from './tasks/task-comments-viewer/scorm-extension-comment/scorm-extension-comment.component';
 import {ScormExtensionModalComponent} from './common/modals/scorm-extension-modal/scorm-extension-modal.component';
@@ -364,6 +365,7 @@ const MY_DATE_FORMAT = {
     ScormPlayerComponent,
     ScormCommentComponent,
     TaskScormCardComponent,
+    TaskTutorialEnrolmentCardComponent,
     ScormExtensionCommentComponent,
     ScormExtensionModalComponent,
   ],
