@@ -52,7 +52,6 @@ export class TaskTutorialEnrolmentCardComponent implements OnChanges, OnInit {
   }
 
   launchTutorialEnrolment(): void {
-    console.log('launching tutorial enrolment...'); // debug
     this.tutorialEnrolmentModalService.show({task: this.task});
   }
 }
