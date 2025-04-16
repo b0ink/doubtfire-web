@@ -34,6 +34,19 @@ export class TaskTutorialEnrolmentCardComponent implements OnChanges, OnInit {
     }
   }
 
+  private readonly tutorialStreamAbbreviation = 'wrkshop-2'; // debug: this should be passed from the taskDefinition model
+  isStudentEnrolledInTutorialStream(): boolean {
+    let isEnrolledInTutorialStream = false;
+
+    const studentTutorialEnrolments = this.task.project.tutorials;
+    for (const tutorial of studentTutorialEnrolments) {
+      if (tutorial.tutorialStream.abbreviation === this.tutorialStreamAbbreviation) {
+        isEnrolledInTutorialStream = true;
+      }
+    }
+    return isEnrolledInTutorialStream;
+  }
+
   isNotStudent(): boolean {
     return this.user !== this.task.project.student;
   }
