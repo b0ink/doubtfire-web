@@ -47,6 +47,7 @@ export class TutorialEnrolmentModalComponent {
   }
 
   attemptTutorialEnrolment() {
-    console.log(`Attempting tutorial enrolment: ${this.tutorialsFormControl.value.abbreviation}`);
+    const selectedTutorial = this.tutorialsFormControl.value;
+    this.data.task.project.switchToTutorial(selectedTutorial);
   }
 }
