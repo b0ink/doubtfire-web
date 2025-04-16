@@ -1,4 +1,4 @@
-import {Component, Input, OnChanges, SimpleChanges} from '@angular/core';
+import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {Task, User, UserService} from 'src/app/api/models/doubtfire-model';
 
 @Component({
@@ -6,7 +6,7 @@ import {Task, User, UserService} from 'src/app/api/models/doubtfire-model';
   templateUrl: './task-tutorial-enrolment-card.component.html',
   styleUrls: ['./task-tutorial-enrolment-card.component.scss'],
 })
-export class TaskTutorialEnrolmentCardComponent implements OnChanges {
+export class TaskTutorialEnrolmentCardComponent implements OnChanges, OnInit {
   @Input() task: Task;
   user: User;
   isSubmitted: boolean; // task submitted and student enrolled in tutorial
@@ -14,6 +14,9 @@ export class TaskTutorialEnrolmentCardComponent implements OnChanges {
 
   constructor(private userService: UserService) {
     this.user = this.userService.currentUser;
+  }
+
+  ngOnInit(): void {
     this.tutorialEnrolmentEnabled = true; // debug
   }
 
