@@ -1,5 +1,6 @@
 import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {Task, User, UserService} from 'src/app/api/models/doubtfire-model';
+import {TutorialEnrolmentModalService} from 'src/app/common/modals/tutorial-enrolment-modal/tutorial-enrolment-modal.service';
 
 @Component({
   selector: 'f-task-tutorial-enrolment-card',
@@ -12,7 +13,10 @@ export class TaskTutorialEnrolmentCardComponent implements OnChanges, OnInit {
   isSubmitted: boolean; // task submitted and student enrolled in tutorial
   tutorialEnrolmentEnabled: boolean;
 
-  constructor(private userService: UserService) {
+  constructor(
+    private userService: UserService,
+    private tutorialEnrolmentModalService: TutorialEnrolmentModalService,
+  ) {
     this.user = this.userService.currentUser;
   }
 
@@ -36,5 +40,6 @@ export class TaskTutorialEnrolmentCardComponent implements OnChanges, OnInit {
 
   launchTutorialEnrolment(): void {
     console.log('launching tutorial enrolment...'); // debug
+    this.tutorialEnrolmentModalService.show({task: this.task});
   }
 }

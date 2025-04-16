@@ -243,6 +243,7 @@ import {ScormExtensionModalComponent} from './common/modals/scorm-extension-moda
 import { D2lTransferComponent, D2lTransferModal } from './units/states/portfolios/d2l-transfer-modal/d2l-transfer.component';
 import { SuccessCloseComponent } from './common/success-close/success-close.component';
 import { TaskDefinitionTutorialEnrolmentComponent } from './units/states/edit/directives/unit-tasks-editor/task-definition-editor/task-definition-tutorial-enrolment/task-definition-tutorial-enrolment.component';
+import { TutorialEnrolmentModalComponent } from './common/modals/tutorial-enrolment-modal/tutorial-enrolment-modal.component';
 
 // See https://stackoverflow.com/questions/55721254/how-to-change-mat-datepicker-date-format-to-dd-mm-yyyy-in-simplest-way/58189036#58189036
 const MY_DATE_FORMAT = {
@@ -368,6 +369,7 @@ const MY_DATE_FORMAT = {
     TaskTutorialEnrolmentCardComponent,
     ScormExtensionCommentComponent,
     ScormExtensionModalComponent,
+    TutorialEnrolmentModalComponent
   ],
   // Services we provide
   providers: [
