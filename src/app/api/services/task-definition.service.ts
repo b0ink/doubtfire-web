@@ -1,11 +1,11 @@
-import { CachedEntityService } from 'ngx-entity-service';
-import { TaskDefinition, Unit } from 'src/app/api/models/doubtfire-model';
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import {CachedEntityService} from 'ngx-entity-service';
+import {TaskDefinition, Unit} from 'src/app/api/models/doubtfire-model';
+import {Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
 import API_URL from 'src/app/config/constants/apiURL';
-import { MappingFunctions } from './mapping-fn';
-import { AppInjector } from 'src/app/app-injector';
-import { Observable } from 'rxjs';
+import {MappingFunctions} from './mapping-fn';
+import {AppInjector} from 'src/app/app-injector';
+import {Observable} from 'rxjs';
 
 @Injectable()
 export class TaskDefinitionService extends CachedEntityService<TaskDefinition> {
@@ -100,6 +100,7 @@ export class TaskDefinitionService extends CachedEntityService<TaskDefinition> {
       'hasTaskResources',
       'hasTaskAssessmentResources',
       'scormEnabled',
+      'tutorialSelfEnrolmentEnabled',
       'hasScormData',
       'scormAllowReview',
       'scormBypassTest',
@@ -108,7 +109,7 @@ export class TaskDefinitionService extends CachedEntityService<TaskDefinition> {
       'isGraded',
       'maxQualityPts',
       'overseerImageId',
-      'assessmentEnabled'
+      'assessmentEnabled',
     );
 
     this.mapping.mapAllKeysToJsonExcept(
@@ -116,7 +117,7 @@ export class TaskDefinitionService extends CachedEntityService<TaskDefinition> {
       'hasTaskSheet',
       'hasTaskResources',
       'hasTaskAssessmentResources',
-      'hasScormData'
+      'hasScormData',
     );
   }
 
@@ -133,13 +134,19 @@ export class TaskDefinitionService extends CachedEntityService<TaskDefinition> {
   public uploadTaskResources(taskDefinition: TaskDefinition, file: File): Observable<boolean> {
     const formData = new FormData();
     formData.append('file', file);
-    return AppInjector.get(HttpClient).post<boolean>(taskDefinition.taskResourcesUploadUrl, formData);
+    return AppInjector.get(HttpClient).post<boolean>(
+      taskDefinition.taskResourcesUploadUrl,
+      formData,
+    );
   }
 
   public uploadOverseerResources(taskDefinition: TaskDefinition, file: File): Observable<boolean> {
     const formData = new FormData();
     formData.append('file', file);
-    return AppInjector.get(HttpClient).post<boolean>(taskDefinition.taskAssessmentResourcesUploadUrl, formData);
+    return AppInjector.get(HttpClient).post<boolean>(
+      taskDefinition.taskAssessmentResourcesUploadUrl,
+      formData,
+    );
   }
 
   public uploadScormData(taskDefinition: TaskDefinition, file: File): Observable<boolean> {
