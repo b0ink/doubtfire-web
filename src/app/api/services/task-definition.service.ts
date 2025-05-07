@@ -144,7 +144,7 @@ export class TaskDefinitionService extends CachedEntityService<TaskDefinition> {
     const formData = new FormData();
     formData.append('file', file);
     return AppInjector.get(HttpClient).post<boolean>(
-      taskDefinition.taskAssessmentResourcesUploadUrl,
+      taskDefinition.taskOverseerResourcesUploadUrl,
       formData,
     );
   }
