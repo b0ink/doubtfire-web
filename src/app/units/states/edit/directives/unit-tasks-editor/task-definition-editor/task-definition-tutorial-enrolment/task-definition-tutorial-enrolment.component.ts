@@ -18,7 +18,7 @@ export class TaskDefinitionTutorialEnrolmentComponent implements OnInit {
 
   public _selectedTutorialStreams: TutorialStream[] = [];
 
-  tutoralStreamControl =  new FormControl<TutorialStream | null>(null, Validators.required);
+  tutoralStreamControl = new FormControl<TutorialStream | null>(null, Validators.required);
 
   public ngOnInit(): void {
     const tutorialStreams = this.taskDefinition.unit.tutorialStreamsCache.currentValues;
@@ -26,6 +26,17 @@ export class TaskDefinitionTutorialEnrolmentComponent implements OnInit {
     for (const stream of tutorialStreams) {
       console.log(stream);
       this._tutorialStreams.push(stream);
+    }
+
+    console.log(this.taskDefinition.tutorialSelfEnrolmentStream);
+    this.tutoralStreamControl.setValue(this.taskDefinition.tutorialSelfEnrolmentStream);
+  }
+
+  public onSelectStream(): void {
+    const selectedStream = this.tutoralStreamControl.value;
+    if (selectedStream) {
+      console.log(selectedStream);
+      this.taskDefinition.tutorialSelfEnrolmentStream = selectedStream;
     }
   }
 
