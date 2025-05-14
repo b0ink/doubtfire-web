@@ -1,4 +1,4 @@
-import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {Component, Input} from '@angular/core';
 import {Task, User, UserService} from 'src/app/api/models/doubtfire-model';
 import {TutorialEnrolmentModalService} from 'src/app/common/modals/tutorial-enrolment-modal/tutorial-enrolment-modal.service';
 
@@ -7,11 +7,10 @@ import {TutorialEnrolmentModalService} from 'src/app/common/modals/tutorial-enro
   templateUrl: './task-tutorial-enrolment-card.component.html',
   styleUrls: ['./task-tutorial-enrolment-card.component.scss'],
 })
-export class TaskTutorialEnrolmentCardComponent implements OnChanges, OnInit {
+export class TaskTutorialEnrolmentCardComponent {
   @Input() task: Task;
   user: User;
   isSubmitted: boolean; // task submitted and student enrolled in tutorial
-  tutorialEnrolmentEnabled: boolean;
 
   constructor(
     private userService: UserService,
@@ -20,27 +19,14 @@ export class TaskTutorialEnrolmentCardComponent implements OnChanges, OnInit {
     this.user = this.userService.currentUser;
   }
 
-  ngOnInit(): void {
-    this.tutorialEnrolmentEnabled = true; // debug
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
-    if (
-      changes.task &&
-      changes.task.currentValue &&
-      changes.task.currentValue.definition.tutorialSelfEnrolmentEnabled
-    ) {
-      console.log('self enrolment feature is enabled for this task'); // debug
-    }
-  }
-
-  private readonly tutorialStreamAbbreviation = 'wrkshop-2'; // debug: this should be passed from the taskDefinition model
   isStudentEnrolledInTutorialStream(): boolean {
+    const tutorialStreamAbbreviation =
+      this.task.definition.tutorialSelfEnrolmentStream.abbreviation;
     let isEnrolledInTutorialStream = false;
 
     const studentTutorialEnrolments = this.task.project.tutorials;
     for (const tutorial of studentTutorialEnrolments) {
-      if (tutorial.tutorialStream.abbreviation === this.tutorialStreamAbbreviation) {
+      if (tutorial.tutorialStream.abbreviation === tutorialStreamAbbreviation) {
         isEnrolledInTutorialStream = true;
       }
     }
