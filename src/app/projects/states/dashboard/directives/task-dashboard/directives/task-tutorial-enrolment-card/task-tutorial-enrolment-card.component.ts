@@ -10,7 +10,6 @@ import {TutorialEnrolmentModalService} from 'src/app/common/modals/tutorial-enro
 export class TaskTutorialEnrolmentCardComponent {
   @Input() task: Task;
   user: User;
-  isSubmitted: boolean; // task submitted and student enrolled in tutorial
 
   constructor(
     private userService: UserService,
