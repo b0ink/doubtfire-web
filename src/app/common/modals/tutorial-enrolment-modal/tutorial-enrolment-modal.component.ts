@@ -21,8 +21,6 @@ export interface TutorialEnrolmentModalData {
   templateUrl: './tutorial-enrolment-modal.component.html',
 })
 export class TutorialEnrolmentModalComponent {
-  private readonly tutorialStreamAbbreviation = 'wrkshop-2'; // debug: this should be passed from the taskDefinition model
-
   tutorialsFormControl = new FormControl<Tutorial | null>(null);
 
   constructor(
@@ -32,8 +30,12 @@ export class TutorialEnrolmentModalComponent {
   ) {}
 
   public getTutorialsForStream() {
+    const tutorialStreamAbbreviation =
+      this.data.task.definition.tutorialSelfEnrolmentStream.abbreviation;
+
     const student = this.data.task.project;
     return this.data.task.unit.tutorials.filter((tutorial) => {
+      // Filter workshops based on campus allocation
       const result: boolean =
         student.campus == null ||
         tutorial.campus == null ||
@@ -41,7 +43,7 @@ export class TutorialEnrolmentModalComponent {
 
       if (!result) return result;
       if (tutorial.tutorialStream) {
-        return tutorial.tutorialStream.abbreviation === this.tutorialStreamAbbreviation;
+        return tutorial.tutorialStream.abbreviation === tutorialStreamAbbreviation;
       }
     });
   }
