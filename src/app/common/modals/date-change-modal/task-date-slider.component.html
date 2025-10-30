@@ -2,15 +2,27 @@
   @if (showTaskAbbr && editMode) {
     <label>{{ task.definition.name }}</label>
   }
+
+  <ngx-gantt #gantt [items]="items">
+    <ngx-gantt-table>
+      <ngx-gantt-column name="Title" width="300px">
+        <ng-template #cell let-item="item"> {{ item.title }} </ng-template>
+      </ngx-gantt-column>
+    </ngx-gantt-table>
+  </ngx-gantt>
+
   <div class="flex flex-row items-center gap-4">
     @if (showTaskAbbr) {
       <label>{{ task.definition.abbreviation }}: </label>
     } @else {
       <label>Complete By: </label>
     }
+    <label class="grow-0" style="min-width: 4em">{{ task.localStartDateString() }}</label>
+
     <mat-slider [max]="max" min="0" class="grow">
+      <input matSliderStartThumb [(ngModel)]="startDay" disabled (input)="updateStartDay($event)" />
       <input
-        matSliderThumb
+        matSliderEndThumb
         [(ngModel)]="value"
         (input)="updateExtension($event)"
         [disabled]="!editMode"

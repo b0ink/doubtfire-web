@@ -3,6 +3,7 @@ import {Task} from 'src/app/api/models/doubtfire-model';
 import {MappingFunctions} from 'src/app/api/services/mapping-fn';
 import {AlertService} from '../../services/alert.service';
 import {ConfirmationModalService} from '../confirmation-modal/confirmation-modal.service';
+import {GanttItem} from '@worktile/gantt';
 
 @Component({
   selector: 'f-task-date-slider',
@@ -17,9 +18,15 @@ export class TaskDateSliderComponent implements OnChanges {
    * The value of the slider, representing the number of weeks
    */
   public value: number;
+  public startDay: number;
 
   private _originalDueDate: Date;
   private _originalExtension: number;
+
+  items: GanttItem[] = [
+    {id: '000000', title: 'Task 0', start: 1627729997, end: 1628421197},
+    {id: '000001', title: 'Task 1', start: 1617361997, end: 1625483597},
+  ];
 
   /**
    * Switch between edit and view mode.
@@ -32,7 +39,7 @@ export class TaskDateSliderComponent implements OnChanges {
   ) {}
 
   public get max(): number {
-    return this.task.unit.totalWeeks + Math.ceil(this.task.project.specConDays / 7);
+    return this.task.unit.totalDays + Math.ceil(this.task.project.specConDays);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -41,9 +48,17 @@ export class TaskDateSliderComponent implements OnChanges {
         this.cancelEdit();
       }
 
-      this.value = this.task.dueWeek;
+      this.value = this.task.dueDay;
+      // this.startDay = this.task.startDay;
+
       this._originalDueDate = this.task.dueDate;
       this._originalExtension = this.task.extensions;
+
+      const tdStartDay = Math.ceil(
+        (this.task.definition.startDate.getTime() - this.task.unit.startDate.getTime()) /
+          (1000 * 3600 * 24),
+      );
+      this.startDay = tdStartDay;
     }
   }
 
@@ -52,12 +67,17 @@ export class TaskDateSliderComponent implements OnChanges {
     // Reset the task to its original state
     this.task.dueDate = this._originalDueDate;
     this.task.extensions = this._originalExtension;
-    this.value = this.task.dueWeek;
+    this.value = this.task.dueDay;
   }
 
   public updateExtension(event: Event): void {
     const value = (event.target as HTMLInputElement).valueAsNumber;
-    this.task.dueWeek = value;
+    this.task.dueDay = value;
+  }
+
+  public updateStartDay(event: Event): void {
+    const value = (event.target as HTMLInputElement).valueAsNumber;
+    this.task.startDay = value;
   }
 
   public editDueDate(): void {

@@ -156,6 +156,10 @@ export class TaskDefinition extends Entity {
     return this.targetDate;
   }
 
+  public localStartDate(): Date {
+    return this.startDate;
+  }
+
   public localDeadlineDate(): Date {
     return this.dueDate;
   }
@@ -166,6 +170,14 @@ export class TaskDefinition extends Entity {
 
     const diffInMs = dueDate.getTime() - startDate.getTime();
     return Math.ceil(diffInMs / (1000 * 60 * 60 * 24 * 7)); // Convert ms to weeks
+  }
+
+  public get dueDay(): number {
+    const startDate = this.unit.startDate;
+    const dueDate = this.localDueDate() || this.unit.endDate;
+
+    const diffInMs = dueDate.getTime() - startDate.getTime();
+    return Math.ceil(diffInMs / (1000 * 60 * 60 * 24)); // Convert ms to days
   }
 
   public matches(text: string): boolean {

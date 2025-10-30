@@ -32,6 +32,8 @@ export class Task extends Entity {
 
   status: TaskStatusEnum = 'not_started';
   dueDate: Date;
+  // startDate: Date;
+  startOffset: number;
   extensions: number;
   scormExtensions: number;
   submissionDate: Date;
@@ -174,6 +176,19 @@ export class Task extends Entity {
     }
   }
 
+  public localStartDate(): Date {
+    if (this.startDate) {
+      return this.startDate;
+    } else {
+      return this.definition.localStartDate();
+    }
+  }
+
+  public localStartDateString(): string {
+    const locale: string = AppInjector.get(LOCALE_ID);
+    return formatDate(this.localStartDate(), 'd MMM', locale);
+  }
+
   public localDueDateString(): string {
     const locale: string = AppInjector.get(LOCALE_ID);
     return formatDate(this.localDueDate(), 'd MMM', locale);
@@ -191,6 +206,29 @@ export class Task extends Entity {
     const diffInDays: number = Math.ceil(diffInMs / (1000 * 3600 * 24));
 
     return Math.ceil(diffInDays / 7);
+  }
+
+  public get dueDay(): number {
+    const startDate: Date = this.unit.startDate;
+    const dueDate: Date = this.localDueDate();
+    const diffInMs: number = dueDate.getTime() - startDate.getTime();
+    const diffInDays: number = Math.ceil(diffInMs / (1000 * 3600 * 24));
+
+    return Math.ceil(diffInDays);
+  }
+
+  public get startDay(): number {
+    return Math.ceil(
+      Math.ceil((this.localDueDate().getTime() - this.startDate.getTime()) / (1000 * 3600 * 24)),
+    );
+  }
+
+  public set startDay(day: number) {
+    const tdStartDay = Math.ceil(
+      (this.definition.startDate.getTime() - this.unit.startDate.getTime()) / (1000 * 3600 * 24),
+    );
+
+    this.startOffset = day - tdStartDay;
   }
 
   /**
@@ -212,6 +250,27 @@ export class Task extends Entity {
 
     // Adjust due date based on difference in current and new due weeks
     this.dueDate = new Date(this.localDueDate().getTime() - currentWeekDueMs + newWeekDueMs);
+  }
+
+  /**
+   * Set the task to be due in a specific week.
+   *
+   * @returns the new due week
+   */
+  public set dueDay(day: number) {
+    // Get original due week and current due week
+    const tdDueDay: number = this.definition.dueDay;
+    const currentDueDay = this.dueDay;
+
+    // Determine how long the extension needs to be
+    this.extensions = day - tdDueDay;
+
+    // Map to ms to adjust due date
+    const currentDayDueMs = MappingFunctions.dayMs(currentDueDay);
+    const newDayDueMs = MappingFunctions.dayMs(day);
+
+    // Adjust due date based on difference in current and new due weeks
+    this.dueDate = new Date(this.localDueDate().getTime() - currentDayDueMs + newDayDueMs);
   }
 
   public localDeadlineDate(): Date {
@@ -297,14 +356,29 @@ export class Task extends Entity {
   }
 
   public get startDate(): Date {
-    if (this.extensions < 0) {
-      // If the task has an extension, the start date is the due date minus the extension
-      return MappingFunctions.addWeeks(this.definition.startDate, this.extensions);
-    } else {
-      // If the task does not have an extension, the start date is the definition's start date
-      return this.definition.startDate;
+    let base = this.definition.startDate;
+
+    if (this.extensions) {
+      base = MappingFunctions.addWeeks(base, this.extensions);
     }
+
+    if (this.startOffset) {
+      base = MappingFunctions.addDays(base, this.startOffset);
+    }
+
+    return base;
   }
+  // public get startDate(): Date {
+  //   if (this.startOffset !== 0) {
+  //     return MappingFunctions.addDays(this.definition.startDate, this.startOffset);
+  //   } else {
+  //     return this.definition.startDate;
+  //   }
+  // }
+
+  // public set startDate(date: Date) {
+  //   this.startDate = date;
+  // }
 
   public timeUntilStartDate(): number {
     return this.timeBetween(new Date(), this.startDate);

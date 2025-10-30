@@ -248,6 +248,13 @@ export class Unit extends Entity {
   }
 
   /**
+   * Get the number of days in the unit's teaching period.
+   */
+  public get totalDays(): number {
+    return Math.ceil(this.totalDuration / (1000 * 60 * 60 * 24));
+  }
+
+  /**
    * Calculate how much time has elapsed in the teaching period, based on the start and
    * end date of the unit relative to the current date.
    *
@@ -265,8 +272,12 @@ export class Unit extends Entity {
     return Math.round((startToNow / totalDuration) * 100);
   }
 
-  public rolloverTo(body: {new_unit_code?: string, start_date: Date; end_date: Date}): Observable<Unit>;
-  public rolloverTo(body: {new_unit_code?: string, teaching_period_id: number}): Observable<Unit>;
+  public rolloverTo(body: {
+    new_unit_code?: string;
+    start_date: Date;
+    end_date: Date;
+  }): Observable<Unit>;
+  public rolloverTo(body: {new_unit_code?: string; teaching_period_id: number}): Observable<Unit>;
   public rolloverTo(body: any): Observable<Unit> {
     const unitService = AppInjector.get(UnitService);
 
