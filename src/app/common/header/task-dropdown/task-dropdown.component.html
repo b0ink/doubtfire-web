@@ -21,7 +21,7 @@
       <button mat-menu-item uiSref="units/students/list" [uiParams]="{unitId: currentUnit.id}">
         <mat-icon aria-label="Students list" fontIcon="group"></mat-icon> Students
       </button>
-      <button mat-menu-item uiSref="units/students/groups" [uiParams]="{unitId: currentUnit.id}">
+      <button mat-menu-item uiSref="units2/students/groups" [uiParams]="{unitId: currentUnit.id}">
         <mat-icon aria-label="Student Groups" fontIcon="groups"></mat-icon> Groups
       </button>
       <button
@@ -82,7 +82,7 @@
         </button>
         <mat-divider></mat-divider>
         <button
-          uiSref="projects/groups"
+          uiSref="projects2/groups"
           [uiParams]="{projectId: currentProject.id, taskAbbr: ''}"
           mat-menu-item
         >
@@ -114,15 +114,11 @@
         </button>
         <mat-divider></mat-divider>
         <!-- <p class="task-dropdown-heading">Students</p> -->
-        <button
-          uiSref="units/students/list"
-          [uiParams]="{unitId: unitRole.unit.id}"
-          mat-menu-item
-        >
+        <button uiSref="units/students/list" [uiParams]="{unitId: unitRole.unit.id}" mat-menu-item>
           <mat-icon aria-label="Students list" fontIcon="group"></mat-icon> Students
         </button>
         <button
-          uiSref="units/students/groups"
+          uiSref="units2/students/groups"
           [uiParams]="{unitId: unitRole.unit.id}"
           mat-menu-item
         >
@@ -133,10 +129,7 @@
           [uiParams]="{unitId: unitRole.unit.id}"
           mat-menu-item
         >
-          <mat-icon
-            aria-label="Student portfolios icon"
-            fontIcon="collections_bookmark"
-          ></mat-icon>
+          <mat-icon aria-label="Student portfolios icon" fontIcon="collections_bookmark"></mat-icon>
           Portfolios
         </button>
         <mat-divider></mat-divider>
@@ -144,7 +137,9 @@
         <button uiSref="units/analytics" [uiParams]="{unitId: unitRole.unit.id}" mat-menu-item>
           <mat-icon aria-label="Unit Analytics icon" fontIcon="insights"></mat-icon>Analytics
         </button>
-        @if (unitRole.role === 'Convenor' || unitRole.role === 'Admin' || unitRole.role === 'Auditor') {
+        @if (
+          unitRole.role === 'Convenor' || unitRole.role === 'Admin' || unitRole.role === 'Auditor'
+        ) {
           <button uiSref="units/admin" [uiParams]="{unitId: unitRole.unit.id}" mat-menu-item>
             <mat-icon aria-label="Unit Administration" fontIcon="admin_panel_settings"></mat-icon>
             Administration
