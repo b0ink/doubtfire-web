@@ -1,19 +1,28 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
-import { aboutDoubtfireModal, calendarModal } from 'src/app/ajs-upgraded-providers';
-import { CheckForUpdateService } from 'src/app/sessions/service-worker-updater/check-for-update.service';
-import { GlobalStateService, ViewType } from 'src/app/projects/states/index/global-state.service';
-import { IsActiveUnitRole } from '../pipes/is-active-unit-role.pipe';
-import { UserService } from 'src/app/api/services/user.service';
-import { AuthenticationService, Project, Task, Unit, UnitRole, User } from 'src/app/api/models/doubtfire-model';
-import { Subscription } from 'rxjs';
-import { MediaObserver } from 'ng-flex-layout';
-import { DoubtfireConstants, LogoSettings } from 'src/app/config/constants/doubtfire-constants';
+import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
+import {CheckForUpdateService} from 'src/app/sessions/service-worker-updater/check-for-update.service';
+import {GlobalStateService, ViewType} from 'src/app/projects/states/index/global-state.service';
+import {IsActiveUnitRole} from '../pipes/is-active-unit-role.pipe';
+import {UserService} from 'src/app/api/services/user.service';
+import {
+  AuthenticationService,
+  Project,
+  Task,
+  Unit,
+  UnitRole,
+  User,
+} from 'src/app/api/models/doubtfire-model';
+import {Subscription} from 'rxjs';
+import {MediaObserver} from 'ng-flex-layout';
+import {DoubtfireConstants, LogoSettings} from 'src/app/config/constants/doubtfire-constants';
 import {SidekiqJobEntry, SidekiqJobService} from 'src/app/api/services/sidekiq-job.service';
 import {SidekiqJobsModalService} from '../modals/sidekiq-jobs-modal/sidekiq-jobs-modal.service';
 import {QrModalService} from '../modals/qr-modal/qr-modal.service';
 import {StateService} from '@uirouter/core';
 import {TutorNotesModalService} from '../modals/tutor-notes-modal/tutor-notes-modal.service';
+import {AboutDoubtfireModalService} from '../modals/about-doubtfire-modal/about-doubtfire-modal.service';
+import {CalendarModalService} from '../modals/calendar-modal/calendar-modal.service';
+import {AboutDoubtfireModal} from '../modals/about-doubtfire-modal/about-doubtfire-modal.component';
 
 @Component({
   selector: 'app-header',
@@ -46,8 +55,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
   sidekiqJobs: SidekiqJobEntry[] = [];
 
   constructor(
-    @Inject(calendarModal) private CalendarModal,
-    @Inject(aboutDoubtfireModal) private AboutDoubtfireModal,
+    private AboutDoubtfireModal: AboutDoubtfireModal,
+    private CalendarModal: CalendarModalService,
     private isActiveUnitRole: IsActiveUnitRole,
     private checkForUpdateService: CheckForUpdateService,
     protected globalState: GlobalStateService,
@@ -133,7 +142,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
         },
         error: (err) => {
           console.log(`Error getting settings: ${err}`);
-        }
+        },
       }),
     );
 

@@ -16,6 +16,7 @@ import {
   Tutorial,
   GroupSet,
   Group,
+  Campus,
   TaskOutcomeAlignment,
   GroupMembership,
   UnitService,
@@ -472,6 +473,28 @@ export class Unit extends Entity {
   public refreshStudents(includeWithdrawnStudents: boolean = false) {
     const projectService: ProjectService = AppInjector.get(ProjectService);
     projectService.loadStudents(this, includeWithdrawnStudents, true);
+  }
+
+  /**
+   * Enrol a student within the unit.
+   *
+   * @param idOrEmail The student id or email of the student to enrol.
+   * @param campus The student's campus
+   * @returns an observer of the post with the student project.
+   */
+  public enrolStudent(idOrEmail: string, campus: Campus): Observable<Project> {
+    const projectService = AppInjector.get(ProjectService);
+
+    return projectService.create(
+      {
+        unit_id: this.id,
+        student_num: idOrEmail,
+        campus_id: campus.id,
+      },
+      {
+        cache: this.studentCache,
+      },
+    );
   }
 
   public findProjectForUsername(username: string): Project {

@@ -29,22 +29,14 @@ import 'angular-md5/angular-md5.js';
 import 'build/templates-app.js';
 import 'build/assets/wav-worker.js';
 import 'build/src/app/visualisations/summary-task-status-scatter.js';
-import 'build/src/app/visualisations/student-task-status-pie-chart.js';
 import 'build/src/app/visualisations/progress-burndown-chart.js';
 import 'build/src/app/visualisations/target-grade-pie-chart.js';
 import 'build/src/app/visualisations/task-status-pie-chart.js';
 import 'build/src/app/visualisations/task-completion-box-plot.js';
 import 'build/src/app/visualisations/visualisations.js';
-import 'build/src/app/visualisations/alignment-bullet-chart.js';
-import 'build/src/app/visualisations/achievement-custom-bar-chart.js';
-import 'build/src/app/visualisations/alignment-bar-chart.js';
-import 'build/src/app/visualisations/achievement-box-plot.js';
 import 'build/src/app/tasks/modals/upload-submission-modal/upload-submission-modal.js';
-import 'build/src/app/tasks/modals/grade-task-modal/grade-task-modal.js';
 import 'build/src/app/tasks/modals/modals.js';
 import 'build/src/app/tasks/tasks.js';
-import 'build/src/app/tasks/project-tasks-list/project-tasks-list.js';
-import 'build/src/app/config/privacy-policy/privacy-policy.js';
 import 'build/src/app/config/runtime/runtime.js';
 import 'build/src/app/config/config.js';
 import 'build/src/app/config/root-controller/root-controller.js';
@@ -52,31 +44,19 @@ import 'build/src/app/config/routing/routing.js';
 import 'build/src/app/config/vendor-dependencies/vendor-dependencies.js';
 import 'build/src/app/config/analytics/analytics.js';
 import 'build/src/app/projects/projects.js';
-import 'build/src/app/projects/project-progress-dashboard/project-progress-dashboard.js';
 import 'build/src/app/projects/states/groups/groups.js';
 import 'build/src/app/projects/states/feedback/feedback.js';
 import 'build/src/app/projects/states/states.js';
-import 'build/src/app/projects/states/dashboard/directives/progress-dashboard/progress-dashboard.js';
 import 'build/src/app/projects/states/dashboard/directives/student-task-list/student-task-list.js';
 import 'build/src/app/projects/states/dashboard/directives/directives.js';
 import 'build/src/app/projects/states/dashboard/directives/task-dashboard/task-dashboard.js';
 import 'build/src/app/projects/states/dashboard/dashboard.js';
 import 'build/src/app/projects/states/outcomes/outcomes.js';
 import 'build/src/app/projects/states/portfolio/directives/portfolio-review-step/portfolio-review-step.js';
-import 'build/src/app/projects/states/portfolio/directives/portfolio-learning-summary-report-step/portfolio-learning-summary-report-step.js';
-import 'build/src/app/projects/states/portfolio/directives/portfolio-add-extra-files-step/portfolio-add-extra-files-step.js';
 import 'build/src/app/projects/states/portfolio/directives/portfolio-tasks-step/portfolio-tasks-step.js';
 import 'build/src/app/projects/states/portfolio/directives/directives.js';
 import 'build/src/app/projects/states/portfolio/portfolio.js';
 import 'build/src/app/projects/states/index/index.js';
-import 'build/src/app/projects/states/tutorials/tutorials.js';
-import 'build/src/app/projects/project-outcome-alignment/project-outcome-alignment.js';
-import 'build/src/app/groups/group-selector/group-selector.js';
-import 'build/src/app/groups/group-set-manager/group-set-manager.js';
-import 'build/src/app/groups/groups.js';
-import 'build/src/app/groups/group-member-contribution-assigner/group-member-contribution-assigner.js';
-import 'build/src/app/groups/group-member-list/group-member-list.js';
-import 'build/src/app/units/modals/unit-student-enrolment-modal/unit-student-enrolment-modal.js';
 import 'build/src/app/units/modals/unit-ilo-edit-modal/unit-ilo-edit-modal.js';
 import 'build/src/app/units/modals/modals.js';
 import 'build/src/app/units/units.js';
@@ -85,14 +65,10 @@ import 'build/src/app/units/states/tasks/tasks.js';
 import 'build/src/app/units/states/tasks/definition/definition.js';
 import 'build/src/app/units/states/tasks/moderation/moderation.js';
 import 'build/src/app/units/states/tasks/overflow/overflow.js';
-import 'build/src/app/units/states/portfolios/portfolios.js';
 import 'build/src/app/units/states/groups/groups.js';
 import 'build/src/app/units/states/states.js';
-import 'build/src/app/units/states/edit/directives/unit-group-set-editor/unit-group-set-editor.js';
 import 'build/src/app/units/states/edit/directives/directives.js';
 import 'build/src/app/units/states/edit/edit.js';
-import 'build/src/app/units/states/rollover/directives/directives.js';
-import 'build/src/app/units/states/rollover/rollover.js';
 import 'build/src/app/units/states/index/index.js';
 import 'build/src/app/units/states/students-list/students-list.js';
 import 'build/src/app/units/states/analytics/analytics.js';
@@ -205,7 +181,7 @@ import {FeedbackTemplateService} from './api/services/feedback-template.service'
 import {StaffNotesComponent} from './projects/states/staff-notes/staff-notes.component';
 import {SidekiqProgressModalService} from './common/modals/sidekiq-progress-modal/sidekiq-progress-modal.service';
 import {TaskPrerequisitesCardComponent} from './projects/states/dashboard/directives/task-dashboard/directives/task-prerequisites-card/task-prerequisites-card.component';
-// import { UnitStudentEnrolmentModalService } from './units/modals/unit-student-enrolment-modal/unit-student-enrolment-modal.service';
+import {UnitStudentEnrolmentModalService} from './units/modals/unit-student-enrolment-modal/unit-student-enrolment-modal.service';
 // import { PrivacyPolicy } from './config/privacy-policy/privacy-policy';
 import {UnitStaffEditorComponent} from './units/states/edit/directives/unit-staff-editor/unit-staff-editor.component';
 import {GroupSetSelectorComponent} from './groups/group-set-selector/group-set-selector.component';
@@ -224,13 +200,12 @@ import {TutorNotesComponent} from './projects/states/tutor-notes/tutor-notes.com
 export const DoubtfireAngularJSModule = angular
   .module('doubtfire', [
     'doubtfire.config',
-    'doubtfire.sessions',
+    // 'doubtfire.sessions',
     'doubtfire.common',
     'doubtfire.errors',
     'doubtfire.units',
     'doubtfire.tasks',
     'doubtfire.projects',
-    'doubtfire.groups',
     'doubtfire.visualisations',
   ])
   .config([
@@ -302,6 +277,8 @@ DoubtfireAngularJSModule.factory(
 );
 DoubtfireAngularJSModule.factory('TaskSubmission', downgradeInjectable(TaskSubmissionService));
 DoubtfireAngularJSModule.factory('GlobalStateService', downgradeInjectable(GlobalStateService));
+// Legacy AngularJS controllers inject `globalStateService` (lower camel case).
+DoubtfireAngularJSModule.factory('globalStateService', downgradeInjectable(GlobalStateService));
 DoubtfireAngularJSModule.factory(
   'TransitionHooksService',
   downgradeInjectable(TransitionHooksService),
@@ -321,6 +298,10 @@ DoubtfireAngularJSModule.factory(
 DoubtfireAngularJSModule.factory(
   'sidekiqProgressModalService',
   downgradeInjectable(SidekiqProgressModalService),
+);
+DoubtfireAngularJSModule.factory(
+  'UnitStudentEnrolmentModal',
+  downgradeInjectable(UnitStudentEnrolmentModalService),
 );
 
 // directive -> component

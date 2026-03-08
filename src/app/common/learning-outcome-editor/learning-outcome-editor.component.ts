@@ -3,7 +3,6 @@ import {
   Component,
   computed,
   inject,
-  Inject,
   Input,
   model,
   OnDestroy,
@@ -25,11 +24,6 @@ import {
 } from 'src/app/api/models/doubtfire-model';
 import {AlertService} from 'src/app/common/services/alert.service';
 import {MatSort, Sort} from '@angular/material/sort';
-import {
-  confirmationModal,
-  csvResultModalService,
-  csvUploadModalService,
-} from 'src/app/ajs-upgraded-providers';
 import {Subscription} from 'rxjs';
 import {COMMA, ENTER} from '@angular/cdk/keycodes';
 import {LiveAnnouncer} from '@angular/cdk/a11y';
@@ -38,7 +32,11 @@ import {MatAutocompleteSelectedEvent} from '@angular/material/autocomplete';
 import {FileDownloaderService} from '../file-downloader/file-downloader.service';
 import {isEqual} from 'lodash';
 import {NestedCsvDownloadModalService} from './nested-csv-download-modal/nested-csv-download-modal.service';
+import {CsvResultModalService} from 'src/app/common/modals/csv-result-modal/csv-result-modal.service';
+import {CsvUploadModalService} from 'src/app/common/modals/csv-upload-modal/csv-upload-modal.service';
 import API_URL from 'src/app/config/constants/apiUrl';
+import {ConfirmModerationModalService} from 'src/app/units/states/tasks/inbox/directives/moderation/confirm-moderation-modal/confirm-moderation-modal.service';
+import {ConfirmationModalService} from '../modals/confirmation-modal/confirmation-modal.service';
 
 @Component({
   selector: 'f-learning-outcome-editor',
@@ -74,9 +72,9 @@ export class LearningOutcomeEditorComponent implements OnChanges, AfterViewInit,
     private nestedCsvDownloadModalService: NestedCsvDownloadModalService,
     private feedbackTemplateService: FeedbackTemplateService,
     private taskService: TaskService,
-    @Inject(csvResultModalService) private csvResultModalService: any,
-    @Inject(csvUploadModalService) private csvUploadModal: any,
-    @Inject(confirmationModal) private confirmationModal: any,
+    private csvResultModalService: CsvResultModalService,
+    private csvUploadModal: CsvUploadModalService,
+    private confirmationModal: ConfirmationModalService,
   ) {
     effect(() => {
       const linkedOutcomes = this.selectedConnectedOutcomes().map((outcome) => outcome.id);

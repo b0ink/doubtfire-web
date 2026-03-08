@@ -1,12 +1,4 @@
-import {
-  AfterViewInit,
-  Component,
-  Inject,
-  Input,
-  OnChanges,
-  SimpleChanges,
-  ViewChild,
-} from '@angular/core';
+import {AfterViewInit, Component, Input, OnChanges, SimpleChanges, ViewChild} from '@angular/core';
 import {MatTable, MatTableDataSource} from '@angular/material/table';
 import {MatPaginator} from '@angular/material/paginator';
 import {MatSelectChange} from '@angular/material/select';
@@ -20,12 +12,10 @@ import {
 } from 'src/app/api/models/doubtfire-model';
 import {AlertService} from 'src/app/common/services/alert.service';
 import {MatSort, Sort} from '@angular/material/sort';
-import {
-  confirmationModal,
-  csvResultModalService,
-  csvUploadModalService,
-} from 'src/app/ajs-upgraded-providers';
+import {CsvResultModalService} from 'src/app/common/modals/csv-result-modal/csv-result-modal.service';
+import {CsvUploadModalService} from 'src/app/common/modals/csv-upload-modal/csv-upload-modal.service';
 import {FileDownloaderService} from '../file-downloader/file-downloader.service';
+import {ConfirmationModalService} from '../modals/confirmation-modal/confirmation-modal.service';
 
 @Component({
   selector: 'f-feedback-template-editor',
@@ -58,9 +48,9 @@ export class FeedbackTemplateEditorComponent implements OnChanges, AfterViewInit
     private feedbackTemplateService: FeedbackTemplateService,
     private fileDownloaderService: FileDownloaderService,
     private taskService: TaskService,
-    @Inject(csvResultModalService) private csvResultModalService: any,
-    @Inject(csvUploadModalService) private csvUploadModal: any,
-    @Inject(confirmationModal) private confirmationModal: any,
+    private csvResultModalService: CsvResultModalService,
+    private csvUploadModal: CsvUploadModalService,
+    private confirmationModal: ConfirmationModalService,
   ) {}
 
   ngAfterViewInit(): void {

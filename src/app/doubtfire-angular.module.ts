@@ -7,6 +7,8 @@ import {UpgradeModule} from '@angular/upgrade/static';
 import {AppInjector, setAppInjector} from './app-injector';
 import {HttpClientModule, HTTP_INTERCEPTORS} from '@angular/common/http';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {NgxChartsModule} from '@swimlane/ngx-charts';
+import {FileUploadModule} from '@iplab/ngx-file-upload';
 
 // Lottie animation module
 // import {LottieModule, LottieCacheModule} from 'ngx-lottie';
@@ -36,11 +38,10 @@ import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {MatPaginatorModule} from '@angular/material/paginator';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
-import {MatChipListbox, MatChipsModule} from '@angular/material/chips';
+import {MatChipsModule} from '@angular/material/chips';
 import {MatGridListModule} from '@angular/material/grid-list';
 import {PdfViewerModule} from 'ng2-pdf-viewer';
 import {UIRouterUpgradeModule} from '@uirouter/angular-hybrid';
-import {MatDialogModule as MatDialogModuleNew} from '@angular/material/dialog';
 import {AlertService} from 'src/app/common/services/alert.service';
 import {AlertComponent} from 'src/app/common/services/alert.service';
 import {MatSidenavModule} from '@angular/material/sidenav';
@@ -51,6 +52,8 @@ import {CodeEditorModule} from '@ngstack/code-editor';
 import {MonacoEditorModule} from 'ngx-monaco-editor-v2';
 
 import {AboutDoubtfireModalService} from 'src/app/common/modals/about-doubtfire-modal/about-doubtfire-modal.service';
+import {CsvResultModalService} from 'src/app/common/modals/csv-result-modal/csv-result-modal.service';
+import {CsvUploadModalService} from 'src/app/common/modals/csv-upload-modal/csv-upload-modal.service';
 import {
   D2lUnitDetailsFormComponent,
   D2lUnitDetailsModal,
@@ -67,19 +70,16 @@ import {
   visualisationsProvider,
   analyticsServiceProvider,
   dateServiceProvider,
-  CsvUploadModalProvider,
-  UnitStudentEnrolmentModalProvider,
-  CsvResultModalProvider,
   AudioRecorderProvider,
   AudioRecorderServiceProvider,
-  commentsModalProvider,
-  plagiarismReportModalProvider,
+  // commentsModalProvider,
+  // plagiarismReportModalProvider,
   rootScopeProvider,
-  aboutDoubtfireModalProvider,
-  calendarModalProvider,
-  gradeTaskModalProvider,
+  // aboutDoubtfireModalProvider,
+  // calendarModalProvider,
+  // gradeTaskModalProvider,
   uploadSubmissionModalProvider,
-  ConfirmationModalProvider,
+  // ConfirmationModalProvider,
 } from './ajs-upgraded-providers';
 import {
   TaskCommentComposerComponent,
@@ -103,6 +103,9 @@ import {ExtensionModalComponent} from './common/modals/extension-modal/extension
 import {CalendarModalComponent} from './common/modals/calendar-modal/calendar-modal.component';
 import {CommentsModalComponent} from './common/modals/comments-modal/comments-modal.component';
 import {ConfirmationModalComponent} from './common/modals/confirmation-modal/confirmation-modal.component';
+import {CsvResultModalComponent} from './common/modals/csv-result-modal/csv-result-modal.component';
+import {CsvUploadModalComponent} from './common/modals/csv-upload-modal/csv-upload-modal.component';
+import {FileUploaderComponent} from './common/file-uploader/file-uploader.component';
 import {MatRadioModule} from '@angular/material/radio';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {
@@ -289,7 +292,7 @@ import {LtiService} from './api/services/lti.service';
 import {TaskDefinitionPrerequisitesComponent} from './units/states/edit/directives/unit-tasks-editor/task-definition-editor/task-definition-prerequisites/task-definition-prerequisites.component';
 import {TaskPrerequisitesCardComponent} from './projects/states/dashboard/directives/task-dashboard/directives/task-prerequisites-card/task-prerequisites-card.component';
 import {TaskPrerequisiteService} from './api/services/task-prerequisite.service';
-// import {GradeTaskModalComponent} from './tasks/modals/grade-task-modal/grade-task-modal.component';
+import {GradeTaskModalComponent} from './tasks/modals/grade-task-modal/grade-task-modal.component';
 // import {PrivacyPolicy} from './config/privacy-policy/privacy-policy';
 import {UnitStaffEditorComponent} from './units/states/edit/directives/unit-staff-editor/unit-staff-editor.component';
 import {GroupSetSelectorComponent} from './groups/group-set-selector/group-set-selector.component';
@@ -321,6 +324,7 @@ import {TutorNotesModalComponent} from './common/modals/tutor-notes-modal/tutor-
 import {FeedbackAppealModalComponent} from './tasks/modals/feedback-appeal-modal/feedback-appeal-modal.component';
 import {ConfirmModerationModalComponent} from './units/states/tasks/inbox/directives/moderation/confirm-moderation-modal/confirm-moderation-modal.component';
 import {TaskClaimComponent} from './units/states/tasks/inbox/directives/task-claim/task-claim.component';
+import {UnitStudentEnrolmentModalComponent} from './units/modals/unit-student-enrolment-modal/unit-student-enrolment-modal.component';
 
 // See https://stackoverflow.com/questions/55721254/how-to-change-mat-datepicker-date-format-to-dd-mm-yyyy-in-simplest-way/58189036#58189036
 const MY_DATE_FORMAT = {
@@ -385,6 +389,8 @@ const GANTT_CHART_CONFIG = {
     ExtensionModalComponent,
     SpecConModalComponent,
     CalendarModalComponent,
+    CsvResultModalComponent,
+    CsvUploadModalComponent,
     ConfirmationModalComponent,
     InstitutionSettingsComponent,
     ProjectPlanComponent,
@@ -393,6 +399,7 @@ const GANTT_CHART_CONFIG = {
     CommentBubbleActionComponent,
     UnitTutorialsListComponent,
     UnitTutorialsManagerComponent,
+    FileUploaderComponent,
     FileDropComponent,
     UnitStudentsEditorComponent,
     UnitTaskEditorComponent,
@@ -486,6 +493,7 @@ const GANTT_CHART_CONFIG = {
     StaffNotesViewComponent,
     QrModalComponent,
     LocalizedDatePipe,
+    GradeTaskModalComponent,
     SubmissionTypeModalComponent,
     SidekiqProgressModalComponent,
     SidekiqJobsModalComponent,
@@ -517,6 +525,7 @@ const GANTT_CHART_CONFIG = {
     FeedbackAppealModalComponent,
     ConfirmModerationModalComponent,
     TaskClaimComponent,
+    UnitStudentEnrolmentModalComponent,
   ],
   providers: [
     // Services we provide
@@ -551,26 +560,23 @@ const GANTT_CHART_CONFIG = {
     CheckForUpdateService,
     TaskOutcomeAlignmentService,
     visualisationsProvider,
-    commentsModalProvider,
+    // commentsModalProvider,
     rootScopeProvider,
-    calendarModalProvider,
-    aboutDoubtfireModalProvider,
+    // calendarModalProvider,
+    // aboutDoubtfireModalProvider,
     uploadSubmissionModalProvider,
-    gradeTaskModalProvider,
+    // gradeTaskModalProvider,
     analyticsServiceProvider,
     dateServiceProvider,
-    CsvUploadModalProvider,
-    CsvResultModalProvider,
+    // CsvUploadModalService,
+    // CsvResultModalService,
     {provide: MAT_DATE_LOCALE, useValue: enAU},
     {provide: DateAdapter, useClass: DateFnsAdapter, deps: [MAT_DATE_LOCALE]},
     {provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMAT},
-    UnitStudentEnrolmentModalProvider,
     TaskCommentService,
     AudioRecorderProvider,
     AudioRecorderServiceProvider,
-    plagiarismReportModalProvider,
     UnitStudentsEditorComponent,
-    ConfirmationModalProvider,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: HttpAuthenticationInterceptor,
@@ -623,6 +629,7 @@ const GANTT_CHART_CONFIG = {
     DragDropModule,
     ScrollingModule,
     MatToolbarModule,
+    MatSidenavModule,
     MatFormFieldModule,
     MatAutocompleteModule,
     MatInputModule,
@@ -650,19 +657,16 @@ const GANTT_CHART_CONFIG = {
     MatSliderModule,
     MatDatepickerModule,
     MatExpansionModule,
-    MatCardModule,
     MatGridListModule,
-    MatSelectModule,
-    MatToolbarModule,
     MatTabsModule,
     UpgradeModule,
     MatTableModule,
-    MatTabsModule,
     MatChipsModule,
     MatSnackBarModule,
     ReactiveFormsModule,
     PickerModule,
     EmojiModule,
+    NgxChartsModule,
     PdfViewerModule,
     LottieComponent,
     UIRouterUpgradeModule.forRoot({states: doubtfireStates}),
@@ -670,15 +674,11 @@ const GANTT_CHART_CONFIG = {
       enabled: environment.production,
       registrationStrategy: () => interval(6000).pipe(take(1)),
     }),
-    MatDatepickerModule,
-    MatNativeDateModule,
-    MatDialogModuleNew,
     CalendarModule.forRoot({provide: CalendarDateAdapter, useFactory: adapterFactory}),
     CodeEditorModule.forRoot(),
     NgxGanttModule,
-    MatSidenavModule,
     MonacoEditorModule.forRoot(),
-    MatChipListbox,
+    FileUploadModule,
   ],
 })
 

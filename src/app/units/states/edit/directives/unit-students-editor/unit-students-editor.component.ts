@@ -1,9 +1,4 @@
-import {
-  csvUploadModalService,
-  csvResultModalService,
-  unitStudentEnrolmentModal,
-} from './../../../../../ajs-upgraded-providers';
-import {ViewChild, Component, Input, Inject, AfterViewInit, OnDestroy} from '@angular/core';
+import {ViewChild, Component, Input, AfterViewInit, OnDestroy} from '@angular/core';
 import {MatTable, MatTableDataSource} from '@angular/material/table';
 import {MatSort, Sort} from '@angular/material/sort';
 import {MatPaginator} from '@angular/material/paginator';
@@ -13,9 +8,12 @@ import {Project, ProjectService, Unit} from 'src/app/api/models/doubtfire-model'
 import {UIRouter} from '@uirouter/angular';
 import {Subscription} from 'rxjs';
 import {AlertService} from 'src/app/common/services/alert.service';
+import {CsvResultModalService} from 'src/app/common/modals/csv-result-modal/csv-result-modal.service';
+import {CsvUploadModalService} from 'src/app/common/modals/csv-upload-modal/csv-upload-modal.service';
 import {SpecConModalService} from 'src/app/common/modals/spec-con-modal/spec-con-modal.service';
 import {SidekiqProgressModalService} from 'src/app/common/modals/sidekiq-progress-modal/sidekiq-progress-modal.service';
 import {SidekiqJob} from 'src/app/api/models/sidekiq-job';
+import {UnitStudentEnrolmentModalService} from 'src/app/units/modals/unit-student-enrolment-modal/unit-student-enrolment-modal.service';
 
 @Component({
   selector: 'unit-students-editor',
@@ -47,10 +45,10 @@ export class UnitStudentsEditorComponent implements AfterViewInit, OnDestroy {
   // that maps all of the form controls that this form consists of.
   constructor(
     private httpClient: HttpClient,
-    @Inject(unitStudentEnrolmentModal) private enrolModal: any,
+    private enrolModal: UnitStudentEnrolmentModalService,
     private alerts: AlertService,
-    @Inject(csvUploadModalService) private csvUploadModal: any,
-    @Inject(csvResultModalService) private csvResultModal: any,
+    private csvUploadModal: CsvUploadModalService,
+    private csvResultModal: CsvResultModalService,
     private fileDownloader: FileDownloaderService,
     private router: UIRouter,
     private projectService: ProjectService,

@@ -1,20 +1,22 @@
 import {InjectionToken} from '@angular/core';
+import {DateService} from './common/services/date.service';
+// import {UnitStudentEnrolmentModalService} from './units/modals/unit-student-enrolment-modal/unit-student-enrolment-modal.service';
 
 // Define an injection token for injecting globally into components.
 // Use the name of the angularjs service as the injection token string
 export const uploadSubmissionModal = new InjectionToken('uploadSubmissionModal');
-export const gradeTaskModal = new InjectionToken('gradeTaskModal');
+// export const gradeTaskModal = new InjectionToken('gradeTaskModal');
 export const analyticsService = new InjectionToken('analyticsService');
 export const dateService = new InjectionToken('dateService');
 export const audioRecorder = new InjectionToken('audioRecorder');
 export const audioRecorderService = new InjectionToken('recorderService');
-export const confirmationModal = new InjectionToken('ConfirmationModal');
-export const unitStudentEnrolmentModal = new InjectionToken('UnitStudentEnrolmentModalAngular');
-export const commentsModal = new InjectionToken('CommentsModal');
+// export const confirmationModal = new InjectionToken('ConfirmationModal');
+// export const unitStudentEnrolmentModal = new InjectionToken('UnitStudentEnrolmentModalAngular');
+// export const commentsModal = new InjectionToken('CommentsModal');
 export const visualisations = new InjectionToken('Visualisation');
 export const rootScope = new InjectionToken('$rootScope');
-export const calendarModal = new InjectionToken('CalendarModal');
-export const aboutDoubtfireModal = new InjectionToken('AboutDoubtfireModal');
+// export const calendarModal = new InjectionToken('CalendarModal');
+// export const aboutDoubtfireModal = new InjectionToken('AboutDoubtfireModal');
 export const plagiarismReportModal = new InjectionToken('PlagiarismReportModal');
 export const CampusService = new InjectionToken('campusService');
 export const Project = new InjectionToken('Project');
@@ -39,11 +41,11 @@ export const visualisationsProvider = {
   deps: ['$injector'],
 };
 
-export const calendarModalProvider = {
-  provide: calendarModal,
-  useFactory: (i) => i.get('CalendarModal'),
-  deps: ['$injector'],
-};
+// export const calendarModalProvider = {
+//   provide: calendarModal,
+//   useFactory: (i) => i.get('CalendarModal'),
+//   deps: ['$injector'],
+// };
 
 export const rootScopeProvider = {
   provide: rootScope,
@@ -51,23 +53,23 @@ export const rootScopeProvider = {
   deps: ['$injector'],
 };
 
-export const aboutDoubtfireModalProvider = {
-  provide: aboutDoubtfireModal,
-  useFactory: (i) => i.get('AboutDoubtfireModal'),
-  deps: ['$injector'],
-};
+// export const aboutDoubtfireModalProvider = {
+//   provide: aboutDoubtfireModal,
+//   useFactory: (i) => i.get('AboutDoubtfireModal'),
+//   deps: ['$injector'],
+// };
 
-export const plagiarismReportModalProvider = {
-  provide: plagiarismReportModal,
-  useFactory: (i) => i.get('PlagiarismReportModal'),
-  deps: ['$injector'],
-};
+// export const plagiarismReportModalProvider = {
+//   provide: plagiarismReportModal,
+//   useFactory: (i) => i.get('PlagiarismReportModal'),
+//   deps: ['$injector'],
+// };
 
-export const commentsModalProvider = {
-  provide: commentsModal,
-  useFactory: (i) => i.get('CommentsModal'),
-  deps: ['$injector'],
-};
+// export const commentsModalProvider = {
+//   provide: commentsModal,
+//   useFactory: (i) => i.get('CommentsModal'),
+//   deps: ['$injector'],
+// };
 
 export const uploadSubmissionModalProvider = {
   provide: uploadSubmissionModal,
@@ -75,11 +77,11 @@ export const uploadSubmissionModalProvider = {
   deps: ['$injector'],
 };
 
-export const gradeTaskModalProvider = {
-  provide: gradeTaskModal,
-  useFactory: (i) => i.get('GradeTaskModal'),
-  deps: ['$injector'],
-};
+// export const gradeTaskModalProvider = {
+//   provide: gradeTaskModal,
+//   useFactory: (i) => i.get('GradeTaskModal'),
+//   deps: ['$injector'],
+// };
 
 export const analyticsServiceProvider = {
   provide: analyticsService,
@@ -89,8 +91,8 @@ export const analyticsServiceProvider = {
 
 export const dateServiceProvider = {
   provide: dateService,
-  useFactory: (i) => i.get('dateService'),
-  deps: ['$injector'],
+  useFactory: (service: DateService) => service,
+  deps: [DateService],
 };
 
 export const AudioRecorderProvider = {
@@ -105,14 +107,14 @@ export const AudioRecorderServiceProvider = {
   deps: ['$injector'],
 };
 
-export const ConfirmationModalProvider = {
-  provide: confirmationModal,
-  useFactory: (i) => i.get('ConfirmationModal'),
-  deps: ['$injector'],
-};
+// export const ConfirmationModalProvider = {
+//   provide: confirmationModal,
+//   useFactory: (i) => i.get('ConfirmationModal'),
+//   deps: ['$injector'],
+// };
 
-export const UnitStudentEnrolmentModalProvider = {
-  provide: unitStudentEnrolmentModal,
-  useFactory: (i) => i.get('UnitStudentEnrolmentModal'),
-  deps: ['$injector'],
-};
+// export const UnitStudentEnrolmentModalProvider = {
+//   provide: unitStudentEnrolmentModal,
+//   useFactory: (service: UnitStudentEnrolmentModalService) => service,
+//   deps: [UnitStudentEnrolmentModalService],
+// };
