@@ -1,98 +1,80 @@
 <div class="table-padding">
-  <!-- Header -->
-  <div class="header-spacer" fxLayout="row">
-    <div fxLayout="column">
+  <div class="header-spacer flex items-center">
+    <div>
       <h3>{{ externalName }} Users</h3>
       <h3>Users Administration View</h3>
     </div>
     <span class="flex-grow"></span>
-    <mat-form-field appearance="outline">
-      <input
-        matInput
-        placeholder="Search users"
-        [(ngModel)]="filter"
-        (keyup)="applyFilter($event.target.value)"
-      />
-    </mat-form-field>
+    <nz-input-group nzPrefixIcon="search">
+      <input nz-input placeholder="Search users" [(ngModel)]="filter" />
+    </nz-input-group>
   </div>
 
-  <!-- Table -->
-  <table
+  <nz-table
+    #usersTable
     class="f-table selectable"
-    mat-table
-    matSort
-    [dataSource]="dataSource"
-    (matSortChange)="sortData($event)"
+    nzShowSizeChanger
+    [nzData]="filteredUsers"
+    [nzPageSizeOptions]="[10, 15, 20, 25]"
   >
-    <ng-container matColumnDef="avatar">
-      <th *matHeaderCellDef mat-header-cell></th>
-      <td *matCellDef="let user" mat-cell (click)="showUserModal(user)">
-        <user-icon fxFlexAlign="center" [size]="30" [user]="user"></user-icon>
-      </td>
-    </ng-container>
+    <thead>
+      <tr>
+        <th></th>
+        <th [nzSortFn]="compareFirstName">First Name</th>
+        <th [nzSortFn]="compareLastName">Last Name</th>
+        <th [nzSortFn]="compareUsername">Username</th>
+        <th [nzSortFn]="compareEmail">Email</th>
+        <th [nzSortFn]="compareSystemRole">System Role</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (user of usersTable.data; track user.id) {
+        <tr (click)="showUserModal(user)">
+          <td><user-icon [size]="30" [user]="user"></user-icon></td>
+          <td>{{ user.firstName }}</td>
+          <td>{{ user.lastName }}</td>
+          <td>{{ user.username }}</td>
+          <td>
+            <a href="mailto:{{ user.email }}" (click)="$event.stopPropagation()">{{
+              user.email
+            }}</a>
+          </td>
+          <td>
+            <nz-tag>{{ user.systemRole }}</nz-tag>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </nz-table>
 
-    <ng-container matColumnDef="firstName">
-      <th *matHeaderCellDef mat-header-cell mat-sort-header>First Name</th>
-      <td *matCellDef="let user" mat-cell (click)="showUserModal(user)">{{ user.firstName }}</td>
-    </ng-container>
+  <div class="flex justify-end pt-4">
+    <button nz-button nzType="primary" (click)="showUserModal()">Add New User</button>
+  </div>
 
-    <ng-container matColumnDef="lastName">
-      <th *matHeaderCellDef mat-header-cell mat-sort-header>Last Name</th>
-      <td *matCellDef="let user" mat-cell (click)="showUserModal(user)">{{ user.lastName }}</td>
-    </ng-container>
-
-    <ng-container matColumnDef="username">
-      <th *matHeaderCellDef mat-header-cell mat-sort-header>Username</th>
-      <td *matCellDef="let user" mat-cell (click)="showUserModal(user)">{{ user.username }}</td>
-    </ng-container>
-
-    <ng-container matColumnDef="email">
-      <th *matHeaderCellDef mat-header-cell mat-sort-header>Email</th>
-      <td *matCellDef="let user" mat-cell (click)="showUserModal(user)">
-        <a href="mailto: {{ user.email }}">{{ user.email }}</a>
-      </td>
-    </ng-container>
-
-    <ng-container matColumnDef="systemRole">
-      <th *matHeaderCellDef mat-header-cell mat-sort-header>System Role</th>
-      <td *matCellDef="let user" mat-cell (click)="showUserModal(user)">{{ user.systemRole }}</td>
-    </ng-container>
-
-    <tr *matHeaderRowDef="displayedColumns" mat-header-row></tr>
-    <tr *matRowDef="let row; columns: displayedColumns" mat-row></tr>
-  </table>
-
-  <!-- Footer -->
-  <span class="flex items-center">
-    <mat-paginator class="mat-elevation-z0" [pageSizeOptions]="[10, 15, 20, 25]"></mat-paginator>
-    <span class="flex-grow"></span>
-    <button color="primary" mat-raised-button (click)="showUserModal()">Add New User</button>
-  </span>
-
-  <mat-expansion-panel class="mt-5" hideToggle>
-    <mat-expansion-panel-header>
-      <mat-panel-title> Bulk users operations </mat-panel-title>
-    </mat-expansion-panel-header>
-    <div class="flex flex-row">
-      <div class="max-w-2xl">
-        <f-file-drop
-          accept=".csv"
-          desiredFileName="users.csv"
-          mode="endpoint"
-          [endpoint]="uploadEndpoint"
-          [multiple]="false"
-          (uploadSuccess)="onUserUploadSuccess($event)"
-        ></f-file-drop>
+  <nz-collapse class="mt-5">
+    <nz-collapse-panel nzHeader="Bulk users operations">
+      <div class="flex flex-row">
+        <div class="max-w-2xl">
+          <f-file-drop
+            accept=".csv"
+            desiredFileName="users.csv"
+            mode="endpoint"
+            [endpoint]="uploadEndpoint"
+            [multiple]="false"
+            (uploadSuccess)="onUserUploadSuccess($event)"
+          ></f-file-drop>
+        </div>
+        <div class="grow"></div>
+        <button
+          aria-label="Download all users csv"
+          nz-button
+          nzType="primary"
+          (click)="downloadUsers()"
+        >
+          Download all users CSV
+          <span nz-icon nzType="download"></span>
+        </button>
       </div>
-      <div class="grow"></div>
-      <button
-        aria-label="Download all users csv"
-        color="primary"
-        mat-flat-button
-        (click)="downloadUsers()"
-      >
-        Download all users CSV <mat-icon>download</mat-icon>
-      </button>
-    </div>
-  </mat-expansion-panel>
+    </nz-collapse-panel>
+  </nz-collapse>
 </div>

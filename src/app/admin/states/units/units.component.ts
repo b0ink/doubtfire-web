@@ -1,14 +1,4 @@
-import {
-  AfterViewInit,
-  ChangeDetectionStrategy,
-  Component,
-  Input,
-  OnInit,
-  ViewChild,
-} from '@angular/core';
-import {MatPaginator} from '@angular/material/paginator';
-import {MatSort, Sort} from '@angular/material/sort';
-import {MatTable, MatTableDataSource} from '@angular/material/table';
+import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {Project} from 'src/app/api/models/project';
 import {Unit} from 'src/app/api/models/unit';
@@ -43,27 +33,11 @@ interface IUnitOrProject {
   changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
-export class FUnitsComponent implements OnInit, AfterViewInit {
-  @ViewChild(MatTable, {static: false}) table: MatTable<Unit>;
-  @ViewChild(MatSort, {static: false}) sort: MatSort;
-  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
-
+export class FUnitsComponent implements OnInit {
   @Input({required: true}) mode: 'admin' | 'tutor' | 'student';
 
-  displayedColumns: string[] = [
-    'unit_code',
-    'name',
-    'unit_role',
-    'teaching_period',
-    'start_date',
-    'end_date',
-    'active',
-  ];
-
-  // the datasource of the table
-  dataSource: MatTableDataSource<IUnitOrProject> = new MatTableDataSource([]);
-
   title: string;
+  filterValue = '';
 
   shouldShowUnitRoleColumn(): boolean {
     return this.mode === 'admin' || this.mode === 'tutor';
@@ -86,7 +60,7 @@ export class FUnitsComponent implements OnInit, AfterViewInit {
       this.globalStateService.onLoad(() => {
         this.globalStateService.loadedUnitRoles.values.subscribe({
           next: (unitRoles) => {
-            this.dataSource.data = this.mapUnitOrProjectsToColumns(unitRoles);
+            this.units = this.mapUnitOrProjectsToColumns(unitRoles);
           },
         });
       });
@@ -98,14 +72,13 @@ export class FUnitsComponent implements OnInit, AfterViewInit {
         this.unitService.query(undefined, {params: {include_in_active: true}}).subscribe({
           next: () => {
             this.globalStateService.loadedUnits.values.subscribe(
-              (loadedUnits) =>
-                (this.dataSource.data = this.mapUnitOrProjectsToColumns(loadedUnits)),
+              (loadedUnits) => (this.units = this.mapUnitOrProjectsToColumns(loadedUnits)),
             );
           },
         });
 
         this.globalStateService.loadedUnits.values.subscribe(
-          (units) => (this.dataSource.data = this.mapUnitOrProjectsToColumns(units)),
+          (units) => (this.units = this.mapUnitOrProjectsToColumns(units)),
         );
       });
     } else if (this.mode === 'student') {
@@ -113,7 +86,7 @@ export class FUnitsComponent implements OnInit, AfterViewInit {
 
       this.globalStateService.onLoad(() => {
         this.globalStateService.currentUserProjects.values.subscribe(
-          (projects) => (this.dataSource.data = this.mapUnitOrProjectsToColumns(projects)),
+          (projects) => (this.units = this.mapUnitOrProjectsToColumns(projects)),
         );
       });
     }
@@ -178,65 +151,26 @@ export class FUnitsComponent implements OnInit, AfterViewInit {
     return [...unitOrProjects].map((unitOrProject) => this.mapUnitSourceToColumn(unitOrProject));
   }
 
-  ngAfterViewInit(): void {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
-    this.dataSource.filterPredicate = (data, filter: string) => data.matches(filter);
+  get filteredUnits(): IUnitOrProject[] {
+    const filter = this.filterValue.trim().toLowerCase();
+    return filter ? this.units.filter((unit) => unit.matches(filter)) : this.units;
   }
 
   createUnit() {
     this.createUnitDialog.show();
   }
 
-  applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
-    }
-  }
-
-  private sortCompare(aValue: number | string, bValue: number | string, isAsc: boolean) {
-    if (aValue === bValue) {
-      return 0;
-    }
-    return (aValue < bValue ? -1 : 1) * (isAsc ? 1 : -1);
-  }
-
-  sortTableData(sort: Sort) {
-    if (!sort.active || sort.direction === '') {
-      return;
-    }
-    this.dataSource.data = [...this.dataSource.data].sort((a, b) => {
-      switch (sort.active) {
-        case 'unit_code':
-          return this.sortCompare(a.unit_code, b.unit_code, sort.direction === 'asc');
-        case 'name':
-          return this.sortCompare(a.name, b.name, sort.direction === 'asc');
-        case 'unit_role':
-          return this.sortCompare(a.unit_role, b.unit_role, sort.direction === 'asc');
-        case 'teaching_period': {
-          return this.sortCompare(a.teaching_period, b.teaching_period, sort.direction === 'asc');
-        }
-        case 'start_date': {
-          return this.sortCompare(
-            a.start_date.getTime(),
-            b.start_date.getTime(),
-            sort.direction === 'asc',
-          );
-        }
-        case 'end_date': {
-          return this.sortCompare(
-            a.end_date.getTime(),
-            b.end_date.getTime(),
-            sort.direction === 'asc',
-          );
-        }
-        case 'active':
-          return this.sortCompare(+!!a.active, +!!b.active, sort.direction === 'asc');
-        default:
-          return 0;
-      }
-    });
-  }
+  readonly compareUnitCode = (a: IUnitOrProject, b: IUnitOrProject) =>
+    a.unit_code.localeCompare(b.unit_code);
+  readonly compareName = (a: IUnitOrProject, b: IUnitOrProject) => a.name.localeCompare(b.name);
+  readonly compareRole = (a: IUnitOrProject, b: IUnitOrProject) =>
+    (a.unit_role ?? '').localeCompare(b.unit_role ?? '');
+  readonly compareTeachingPeriod = (a: IUnitOrProject, b: IUnitOrProject) =>
+    (a.teaching_period ?? '').localeCompare(b.teaching_period ?? '');
+  readonly compareStartDate = (a: IUnitOrProject, b: IUnitOrProject) =>
+    a.start_date.getTime() - b.start_date.getTime();
+  readonly compareEndDate = (a: IUnitOrProject, b: IUnitOrProject) =>
+    a.end_date.getTime() - b.end_date.getTime();
+  readonly compareActive = (a: IUnitOrProject, b: IUnitOrProject) =>
+    Number(a.active) - Number(b.active);
 }

@@ -1,8 +1,5 @@
-import {ChangeDetectionStrategy, Component, Inject, OnInit, ViewChild} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
-import {MatPaginator} from '@angular/material/paginator';
-import {MatSort, Sort} from '@angular/material/sort';
-import {MatTableDataSource} from '@angular/material/table';
+import {NZ_MODAL_DATA, NzModalRef, NzModalService} from 'ng-zorro-antd/modal';
+import {ChangeDetectionStrategy, Component, Inject, OnInit} from '@angular/core';
 import {Observable} from 'rxjs';
 import {Campus} from 'src/app/api/models/campus/campus';
 import {TeachingPeriodBreak} from 'src/app/api/models/teaching-period';
@@ -21,16 +18,11 @@ import {TeachingPeriodUnitImportService} from '../teaching-period-unit-import/te
   standalone: false,
 })
 export class TeachingPeriodListComponent implements OnInit {
-  @ViewChild(MatSort) sort = new MatSort();
-  @ViewChild(MatPaginator) paginator: MatPaginator;
-
-  public dataSource: MatTableDataSource<TeachingPeriod> = new MatTableDataSource();
-
-  displayedColumns: string[] = ['active', 'name', 'startDate', 'endDate', 'activeUntil', 'actions'];
+  public teachingPeriods: TeachingPeriod[] = [];
 
   constructor(
     private teachingPeriodsService: TeachingPeriodService,
-    public dialog: MatDialog,
+    public modal: NzModalService,
     public teachingPeriodUnitImportService: TeachingPeriodUnitImportService,
   ) {}
 
@@ -40,9 +32,7 @@ export class TeachingPeriodListComponent implements OnInit {
 
     // Bind to the Teaching Periods
     this.teachingPeriodsService.cache.values.subscribe((teachingPeriods) => {
-      this.dataSource.data = teachingPeriods;
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
+      this.teachingPeriods = [...teachingPeriods];
     });
   }
 
@@ -51,31 +41,25 @@ export class TeachingPeriodListComponent implements OnInit {
   }
 
   addTeachingPeriod() {
-    this.dialog.open(NewTeachingPeriodDialogComponent, {
-      data: {},
+    this.modal.create({
+      nzTitle: 'New teaching period',
+      nzContent: NewTeachingPeriodDialogComponent,
+      nzData: {},
+      nzFooter: null,
+      nzWidth: 720,
     });
   }
 
   selectTeachingPeriod(selectedTeachingPeriod: TeachingPeriod) {
     this.teachingPeriodsService.get(selectedTeachingPeriod.id).subscribe((teachingPeriod) => {
-      this.dialog.open(NewTeachingPeriodDialogComponent, {data: {teachingPeriod: teachingPeriod}});
+      this.modal.create({
+        nzTitle: 'Edit teaching period',
+        nzContent: NewTeachingPeriodDialogComponent,
+        nzData: {teachingPeriod},
+        nzFooter: null,
+        nzWidth: 720,
+      });
     });
-  }
-
-  /**
-   * Function used by implemented sortTableData to determine the order
-   * of values within the EntityForm once sorting has been triggered.
-   *
-   * @param aValue value to be compared against bValue.
-   * @param bValue value to be compared against aValue.
-   *
-   * @returns truthy comparison between aValue and bValue.
-   */
-  protected sortCompare(aValue: number | string, bValue: number | string, isAsc: boolean) {
-    if (aValue === bValue) {
-      return 0;
-    }
-    return (aValue < bValue ? -1 : 1) * (isAsc ? 1 : -1);
   }
 
   private sortDateValue(value: Date | string): number {
@@ -83,42 +67,15 @@ export class TeachingPeriodListComponent implements OnInit {
     return Number.isFinite(time) ? time : 0;
   }
 
-  // Sorting function to sort data when sort
-  // event is triggered
-  sortTableData(sort: Sort) {
-    if (!sort.active || sort.direction === '') {
-      return;
-    }
-    this.dataSource.data = [...this.dataSource.data].sort((a, b) => {
-      const isAsc = sort.direction === 'asc';
-      switch (sort.active) {
-        case 'active':
-          return this.sortCompare(Number(a.active), Number(b.active), isAsc);
-        case 'name':
-          return this.sortCompare(a.name, b.name, isAsc);
-        case 'startDate':
-          return this.sortCompare(
-            this.sortDateValue(a.startDate),
-            this.sortDateValue(b.startDate),
-            isAsc,
-          );
-        case 'endDate':
-          return this.sortCompare(
-            this.sortDateValue(a.endDate),
-            this.sortDateValue(b.endDate),
-            isAsc,
-          );
-        case 'activeUntil':
-          return this.sortCompare(
-            this.sortDateValue(a.activeUntil),
-            this.sortDateValue(b.activeUntil),
-            isAsc,
-          );
-        default:
-          return 0;
-      }
-    });
-  }
+  readonly compareActive = (a: TeachingPeriod, b: TeachingPeriod) =>
+    Number(a.active) - Number(b.active);
+  readonly compareName = (a: TeachingPeriod, b: TeachingPeriod) => a.name.localeCompare(b.name);
+  readonly compareStartDate = (a: TeachingPeriod, b: TeachingPeriod) =>
+    this.sortDateValue(a.startDate) - this.sortDateValue(b.startDate);
+  readonly compareEndDate = (a: TeachingPeriod, b: TeachingPeriod) =>
+    this.sortDateValue(a.endDate) - this.sortDateValue(b.endDate);
+  readonly compareActiveUntil = (a: TeachingPeriod, b: TeachingPeriod) =>
+    this.sortDateValue(a.activeUntil) - this.sortDateValue(b.activeUntil);
 }
 
 @Component({
@@ -129,8 +86,8 @@ export class TeachingPeriodListComponent implements OnInit {
 })
 export class NewTeachingPeriodDialogComponent implements OnInit {
   constructor(
-    @Inject(MAT_DIALOG_DATA) public data,
-    private dialogRef: MatDialogRef<NewTeachingPeriodDialogComponent>,
+    @Inject(NZ_MODAL_DATA) public data: {teachingPeriod?: TeachingPeriod},
+    private modalRef: NzModalRef<NewTeachingPeriodDialogComponent>,
     public teachingPeriodService: TeachingPeriodService,
     public teachingPeriodBreakService: TeachingPeriodBreakService,
     public campusService: CampusService,
@@ -223,11 +180,15 @@ export class NewTeachingPeriodDialogComponent implements OnInit {
     observer.subscribe({
       next: (teachingPeriod) => {
         this.alertService.success(`${teachingPeriod.name} saved`);
-        this.dialogRef.close(teachingPeriod);
+        this.modalRef.close(teachingPeriod);
       },
       error: (response) => {
         this.alertService.error(`Error saving teaching period. ${response}`);
       },
     });
+  }
+
+  close(): void {
+    this.modalRef.close();
   }
 }

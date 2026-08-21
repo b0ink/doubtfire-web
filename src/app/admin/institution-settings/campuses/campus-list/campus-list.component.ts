@@ -1,7 +1,6 @@
-import {AfterViewInit, ChangeDetectionStrategy, Component, ViewChild} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component} from '@angular/core';
 import {UntypedFormControl, Validators} from '@angular/forms';
-import {MatSort, Sort} from '@angular/material/sort';
-import {MatTable, MatTableDataSource} from '@angular/material/table';
+import {MatTableDataSource} from '@angular/material/table';
 import {Campus, CampusService} from 'src/app/api/models/doubtfire-model';
 import {EntityFormComponent} from 'src/app/common/entity-form/entity-form.component';
 import {AlertService} from 'src/app/common/services/alert.service';
@@ -14,9 +13,6 @@ import {AlertService} from 'src/app/common/services/alert.service';
   standalone: false,
 })
 export class CampusListComponent extends EntityFormComponent<Campus> implements AfterViewInit {
-  @ViewChild(MatTable, {static: true}) table: MatTable<Campus>;
-  @ViewChild(MatSort, {static: true}) sort: MatSort;
-
   syncModes = ['timetable', 'automatic', 'manual'];
 
   // Set up the table
@@ -69,7 +65,7 @@ export class CampusListComponent extends EntityFormComponent<Campus> implements 
     } else {
       this.campuses.push(value);
     }
-    this.dataSource.sort = this.sort;
+    this.dataSource.data = [...this.campuses];
   }
 
   // This method is called when the form is submitted,
@@ -90,19 +86,16 @@ export class CampusListComponent extends EntityFormComponent<Campus> implements 
     });
   }
 
-  // Sorting function to sort data when sort
-  // event is triggered
-  sortTableData(sort: Sort) {
-    if (!sort.active || sort.direction === '') {
-      return;
-    }
-    switch (sort.active) {
-      case 'name':
-      case 'abbreviation':
-      case 'mode':
-      case 'timezone':
-      case 'active':
-        return super.sortTableData(sort);
-    }
+  readonly compareName = (a: Campus, b: Campus) => a.name.localeCompare(b.name);
+  readonly compareAbbreviation = (a: Campus, b: Campus) =>
+    a.abbreviation.localeCompare(b.abbreviation);
+  readonly compareMode = (a: Campus, b: Campus) => a.mode.localeCompare(b.mode);
+  readonly compareTimezone = (a: Campus, b: Campus) => a.timezone.localeCompare(b.timezone);
+  readonly compareActive = (a: Campus, b: Campus) =>
+    Number((a as Campus & {active: boolean}).active) -
+    Number((b as Campus & {active: boolean}).active);
+
+  campusIsActive(campus: Campus): boolean {
+    return (campus as Campus & {active: boolean}).active;
   }
 }

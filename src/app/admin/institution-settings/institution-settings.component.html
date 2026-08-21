@@ -1,15 +1,14 @@
 <div class="institution-settings-container">
   <!-- <h1 class="py-2 text-center text-gray-800">Institution settings</h1> -->
-  <mat-tab-group
+  <nz-tabs
     class="mx-auto mb-6 max-w-fit"
-    dynamicHeight
-    [selectedIndex]="currentIndex"
-    (selectedTabChange)="onTabChange($event)"
+    [nzSelectedIndex]="currentIndex"
+    (nzSelectedIndexChange)="onTabChange($event)"
   >
     @for (tab of tabs; track tab.routeSegment) {
-      <mat-tab [label]="tab.label"></mat-tab>
+      <nz-tab [nzTitle]="tab.label"></nz-tab>
     }
-  </mat-tab-group>
+  </nz-tabs>
 
   <div class="min-h-0 flex-1">
     @switch (currentTab.routeSegment) {

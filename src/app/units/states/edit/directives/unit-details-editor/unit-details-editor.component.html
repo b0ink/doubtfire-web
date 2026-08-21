@@ -1,450 +1,383 @@
-<div class="mx-auto flex w-full flex-col gap-3">
-  <div class="header">
-    <h3>Unit Details</h3>
-    <p>Edit and configure all details and settings for this unit.</p>
-  </div>
-  <mat-card appearance="outlined" class="gap-1 p-[16px]">
-    <mat-form-field appearance="outline" class="w-full">
-      <mat-label>Code</mat-label>
-      <input matInput required [(ngModel)]="unit.code" />
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="w-full">
-      <mat-label>Name</mat-label>
-      <input matInput required [(ngModel)]="unit.name" />
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="w-full">
-      <mat-label>Description</mat-label>
-      <textarea matInput required [(ngModel)]="unit.description"></textarea>
-    </mat-form-field>
-  </mat-card>
-
-  <mat-card appearance="outlined" class="gap-1 p-[16px]">
-    <mat-form-field appearance="outline" class="w-full">
-      <mat-label>Teaching Period</mat-label>
-      <mat-select placeholder="Select Teaching Period" [(ngModel)]="unit.teachingPeriod">
-        <mat-option [value]="undefined">None</mat-option>
-        @for (period of teachingPeriods; track period) {
-          <mat-option [value]="period">{{ period.name }}</mat-option>
-        }
-      </mat-select>
-    </mat-form-field>
-
-    <div class="flex w-full gap-3">
-      @if (!unit.teachingPeriod) {
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Start Date</mat-label>
-          <input matInput [matDatepicker]="startdatepicker" [(ngModel)]="unit.startDate" />
-          <mat-datepicker-toggle matIconSuffix [for]="startdatepicker"></mat-datepicker-toggle>
-          <mat-datepicker #startdatepicker></mat-datepicker>
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>End Date</mat-label>
-          <input matInput [matDatepicker]="enddatepicker" [(ngModel)]="unit.endDate" />
-          <mat-datepicker-toggle matIconSuffix [for]="enddatepicker"></mat-datepicker-toggle>
-          <mat-datepicker #enddatepicker></mat-datepicker>
-        </mat-form-field>
-      } @else {
-        <mat-form-field appearance="outline" class="w-full" disabled>
-          <mat-label>{{ unit.teachingPeriod.name }} Start Date</mat-label>
-          <input
-            disabled
-            matInput
-            readonly
-            [value]="$safeNavigationMigration(unit.teachingPeriod?.startDate) | date"
-          />
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="w-full" disabled>
-          <mat-label>{{ unit.teachingPeriod.name }} End Date</mat-label>
-          <input
-            disabled
-            matInput
-            readonly
-            [value]="$safeNavigationMigration(unit.teachingPeriod?.endDate) | date"
-          />
-        </mat-form-field>
-      }
-    </div>
-
-    <mat-form-field appearance="outline">
-      <mat-label>Portfolio Auto-Generation Date</mat-label>
-      <input
-        matInput
-        [matDatepicker]="potfoliogendatepicker"
-        [(ngModel)]="unit.portfolioAutoGenerationDate"
-      />
-      <mat-datepicker-toggle matIconSuffix [for]="potfoliogendatepicker"></mat-datepicker-toggle>
-      <mat-datepicker #potfoliogendatepicker> </mat-datepicker>
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="w-full">
-      <mat-label>Draft Learning Summary</mat-label>
-      <mat-select placeholder="Select Learning Summary Task" [(ngModel)]="unit.draftTaskDefinition">
-        <mat-option [value]="undefined">None</mat-option>
-        @for (td of taskDefinitions; track td) {
-          <mat-option [value]="td">{{ td.abbreviation }} - {{ td.name }}</mat-option>
-        }
-      </mat-select>
-      <mat-hint>
-        When a draft learning summary task is selected, this will ensure a students uploaded draft
-        is automatically added to the students portfolio.
-      </mat-hint>
-    </mat-form-field>
-
-    <mat-form-field appearance="outline">
-      <mat-label>Extension duration onresubmit </mat-label>
-      <input matInput required [(ngModel)]="unit.extensionWeeksOnResubmitRequest" />
-      <mat-hint>
-        When tutors request resubmission of a task, this setting determines how many weeks the task
-        will be extended to allow students to fix and resubmit their work.
-      </mat-hint>
-    </mat-form-field>
-
-    <div class="flex w-full gap-3">
-      <mat-form-field appearance="outline" class="w-full">
-        <mat-label>Feedback warning after (days)</mat-label>
-        <input
-          matInput
-          min="0"
-          required
-          type="number"
-          [(ngModel)]="unit.feedbackWarningThresholdDays"
-        />
-        <mat-hint>
-          Tasks in inbox are highlighted if feedback isn’t given within this many days of
-          submission.
-        </mat-hint>
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="w-full">
-        <mat-label>Show task in overflow queue after (days)</mat-label>
-        <input
-          matInput
-          min="0"
-          required
-          type="number"
-          [(ngModel)]="unit.feedbackOverflowThresholdDays"
-        />
-        <mat-hint>
-          Tasks without feedback for this many days will appear in the overflow queue.
-        </mat-hint>
-      </mat-form-field>
-    </div>
-  </mat-card>
-
-  <mat-card appearance="outlined" class="flex flex-col gap-3 p-4">
+<div class="unit-editor">
+  <header class="editor-heading">
     <div>
-      <h4 class="mb-1">Grade definitions</h4>
-      <p class="text-sm text-gray-600">
+      <span class="eyebrow">Unit administration</span>
+      <h2>Unit details</h2>
+      <p>Edit teaching settings, grades, integrations, and student-facing options.</p>
+    </div>
+    <p-button icon="pi pi-save" label="Save changes" (onClick)="saveUnit()" />
+  </header>
+
+  <p-card header="General details">
+    <div class="form-grid">
+      <label class="field">
+        <span>Code <b>*</b></span>
+        <input pInputText required [(ngModel)]="unit.code" />
+      </label>
+      <label class="field">
+        <span>Name <b>*</b></span>
+        <input pInputText required [(ngModel)]="unit.name" />
+      </label>
+      <label class="field field-wide">
+        <span>Description <b>*</b></span>
+        <textarea pTextarea required rows="4" [(ngModel)]="unit.description"></textarea>
+      </label>
+    </div>
+  </p-card>
+
+  <p-card header="Teaching and feedback">
+    <div class="form-grid">
+      <label class="field field-wide">
+        <span>Teaching period</span>
+        <p-select
+          appendTo="body"
+          optionLabel="name"
+          placeholder="Select teaching period"
+          [options]="teachingPeriods"
+          [showClear]="true"
+          [(ngModel)]="unit.teachingPeriod"
+        />
+      </label>
+
+      @if (!unit.teachingPeriod) {
+        <label class="field">
+          <span>Start date</span>
+          <p-datepicker
+            appendTo="body"
+            dateFormat="dd/mm/yy"
+            [showIcon]="true"
+            [(ngModel)]="unit.startDate"
+          />
+        </label>
+        <label class="field">
+          <span>End date</span>
+          <p-datepicker
+            appendTo="body"
+            dateFormat="dd/mm/yy"
+            [showIcon]="true"
+            [(ngModel)]="unit.endDate"
+          />
+        </label>
+      } @else {
+        <label class="field">
+          <span>{{ unit.teachingPeriod.name }} start date</span>
+          <input disabled pInputText [value]="unit.teachingPeriod.startDate | date" />
+        </label>
+        <label class="field">
+          <span>{{ unit.teachingPeriod.name }} end date</span>
+          <input disabled pInputText [value]="unit.teachingPeriod.endDate | date" />
+        </label>
+      }
+
+      <label class="field">
+        <span>Portfolio auto-generation date</span>
+        <p-datepicker
+          appendTo="body"
+          dateFormat="dd/mm/yy"
+          [showIcon]="true"
+          [(ngModel)]="unit.portfolioAutoGenerationDate"
+        />
+      </label>
+      <label class="field">
+        <span>Draft learning summary</span>
+        <p-select
+          appendTo="body"
+          placeholder="Select learning summary task"
+          [options]="taskDefinitions"
+          [showClear]="true"
+          [(ngModel)]="unit.draftTaskDefinition"
+        >
+          <ng-template #selectedItem let-task
+            >{{ task.abbreviation }} - {{ task.name }}</ng-template
+          >
+          <ng-template #item let-task>{{ task.abbreviation }} - {{ task.name }}</ng-template>
+        </p-select>
+        <small>A student's uploaded draft is automatically included in their portfolio.</small>
+      </label>
+
+      <label class="field field-wide">
+        <span>Extension duration on resubmit (weeks) <b>*</b></span>
+        <p-inputnumber [min]="0" [(ngModel)]="unit.extensionWeeksOnResubmitRequest" />
+        <small>How long students have to fix and resubmit work after a tutor requests it.</small>
+      </label>
+      <label class="field">
+        <span>Feedback warning after (days) <b>*</b></span>
+        <p-inputnumber [min]="0" [(ngModel)]="unit.feedbackWarningThresholdDays" />
+        <small>Highlights inbox tasks when feedback has not been given.</small>
+      </label>
+      <label class="field">
+        <span>Show in overflow queue after (days) <b>*</b></span>
+        <p-inputnumber [min]="0" [(ngModel)]="unit.feedbackOverflowThresholdDays" />
+        <small>Moves tasks without feedback into the overflow queue.</small>
+      </label>
+    </div>
+  </p-card>
+
+  <p-card header="Grade definitions">
+    <div class="section-copy">
+      <p>
         Index -1 is used when work fails assessment. Target grades start at index 0, and higher
         indexes include tasks from every lower level.
       </p>
-      <p class="text-sm text-gray-600">
-        Grades already used by tasks, students, or communications can be renamed, but cannot be
-        removed or moved to another index.
-      </p>
+      <p>Used grades can be renamed, but cannot be removed or moved to another index.</p>
     </div>
 
-    <div>
-      <table mat-table [dataSource]="gradeDefinitions">
-        <ng-container matColumnDef="index">
-          <th *matHeaderCellDef mat-header-cell>Index</th>
-          <td *matCellDef="let grade" mat-cell>{{ grade.value }}</td>
-        </ng-container>
-
-        <ng-container matColumnDef="label">
-          <th *matHeaderCellDef mat-header-cell>Label</th>
-          <td *matCellDef="let grade; let index = index" mat-cell>
+    <p-table [tableStyle]="{'min-width': '46rem'}" [value]="gradeDefinitions">
+      <ng-template #header>
+        <tr>
+          <th>Index</th>
+          <th>Label</th>
+          <th>Abbreviation</th>
+          <th>Order</th>
+          <th class="actions-column">Actions</th>
+        </tr>
+      </ng-template>
+      <ng-template #body let-grade let-rowIndex="rowIndex">
+        <tr>
+          <td>
+            <span class="grade-index">{{ grade.value }}</span>
+          </td>
+          <td>
             @if (editingGradeId === grade.id) {
-              <mat-form-field appearance="outline" class="mt-4" subscriptSizing="dynamic">
-                <mat-label>Label</mat-label>
-                <input
-                  matInput
-                  maxlength="50"
-                  required
-                  [ngModel]="grade.label"
-                  (keydown.space)="$event.stopPropagation()"
-                  (ngModelChange)="updateGrade(index, 'label', $event)"
-                />
-              </mat-form-field>
+              <input
+                maxlength="50"
+                pInputText
+                required
+                [ngModel]="grade.label"
+                (keydown.space)="$event.stopPropagation()"
+                (ngModelChange)="updateGrade(rowIndex, 'label', $event)"
+              />
             } @else {
               {{ grade.label }}
             }
           </td>
-        </ng-container>
-
-        <ng-container matColumnDef="abbreviation">
-          <th *matHeaderCellDef mat-header-cell>Abbreviation</th>
-          <td *matCellDef="let grade; let index = index" mat-cell>
+          <td>
             @if (editingGradeId === grade.id) {
-              <mat-form-field appearance="outline" class="mt-4" subscriptSizing="dynamic">
-                <mat-label>Abbreviation</mat-label>
-                <input
-                  matInput
-                  maxlength="10"
-                  required
-                  [ngModel]="grade.abbreviation"
-                  (keydown.space)="$event.stopPropagation()"
-                  (ngModelChange)="updateGrade(index, 'abbreviation', $event)"
-                />
-              </mat-form-field>
+              <input
+                maxlength="10"
+                pInputText
+                required
+                [ngModel]="grade.abbreviation"
+                (keydown.space)="$event.stopPropagation()"
+                (ngModelChange)="updateGrade(rowIndex, 'abbreviation', $event)"
+              />
             } @else {
-              {{ grade.abbreviation }}
+              <span class="grade-code">{{ grade.abbreviation }}</span>
             }
           </td>
-        </ng-container>
-
-        <ng-container matColumnDef="order">
-          <th *matHeaderCellDef mat-header-cell>Order</th>
-          <td *matCellDef="let grade; let index = index" mat-cell>
-            <div class="flex">
-              @if (index > 0) {
-                <button
-                  aria-label="Move grade down"
-                  mat-icon-button
-                  matTooltip="Move down"
-                  type="button"
-                  [disabled]="isAddingGrade() || index === gradeDefinitions.length - 1"
-                  (click)="moveGrade(index, 1)"
-                >
-                  <mat-icon>arrow_downward</mat-icon>
-                </button>
-                <button
-                  aria-label="Move grade up"
-                  mat-icon-button
-                  matTooltip="Move up"
-                  type="button"
-                  [disabled]="isAddingGrade() || index === 1"
-                  (click)="moveGrade(index, -1)"
-                >
-                  <mat-icon>arrow_upward</mat-icon>
-                </button>
-              }
-            </div>
+          <td>
+            @if (rowIndex > 0) {
+              <div class="button-row">
+                <p-button
+                  ariaLabel="Move grade down"
+                  icon="pi pi-arrow-down"
+                  pTooltip="Move down"
+                  severity="secondary"
+                  [disabled]="isAddingGrade() || rowIndex === gradeDefinitions.length - 1"
+                  [rounded]="true"
+                  [text]="true"
+                  (onClick)="moveGrade(rowIndex, 1)"
+                />
+                <p-button
+                  ariaLabel="Move grade up"
+                  icon="pi pi-arrow-up"
+                  pTooltip="Move up"
+                  severity="secondary"
+                  [disabled]="isAddingGrade() || rowIndex === 1"
+                  [rounded]="true"
+                  [text]="true"
+                  (onClick)="moveGrade(rowIndex, -1)"
+                />
+              </div>
+            }
           </td>
-        </ng-container>
-
-        <ng-container matColumnDef="actions">
-          <th *matHeaderCellDef mat-header-cell>Actions</th>
-          <td *matCellDef="let grade; let index = index" mat-cell>
-            <div class="flex">
+          <td>
+            <div class="button-row button-row-end">
               @if (editingGradeId === grade.id) {
-                <button
-                  aria-label="Save grade"
-                  mat-icon-button
-                  matTooltip="Save"
-                  type="button"
-                  (click)="saveGrade()"
-                >
-                  <mat-icon>save</mat-icon>
-                </button>
+                <p-button
+                  ariaLabel="Save grade"
+                  icon="pi pi-check"
+                  pTooltip="Save"
+                  [rounded]="true"
+                  [text]="true"
+                  (onClick)="saveGrade()"
+                />
               } @else {
-                <button
-                  aria-label="Edit grade"
-                  mat-icon-button
-                  matTooltip="Edit"
-                  type="button"
+                <p-button
+                  ariaLabel="Edit grade"
+                  icon="pi pi-pencil"
+                  pTooltip="Edit"
+                  severity="secondary"
                   [disabled]="isAddingGrade()"
-                  (click)="editGrade(grade)"
-                >
-                  <mat-icon>edit</mat-icon>
-                </button>
+                  [rounded]="true"
+                  [text]="true"
+                  (onClick)="editGrade(grade)"
+                />
               }
-
-              @if (index > 0) {
-                <button
-                  aria-label="Remove grade"
-                  mat-icon-button
-                  matTooltip="Delete"
-                  type="button"
+              @if (rowIndex > 0) {
+                <p-button
+                  ariaLabel="Remove grade"
+                  icon="pi pi-trash"
+                  pTooltip="Delete"
+                  severity="danger"
                   [disabled]="
                     gradeDefinitions.length === 2 ||
                     (isAddingGrade() && editingGradeId !== grade.id)
                   "
-                  (click)="removeGrade(index)"
-                >
-                  <mat-icon>delete</mat-icon>
-                </button>
+                  [rounded]="true"
+                  [text]="true"
+                  (onClick)="removeGrade(rowIndex)"
+                />
               }
             </div>
           </td>
-        </ng-container>
-
-        <tr *matHeaderRowDef="gradeDefinitionColumns" mat-header-row></tr>
-        <tr *matRowDef="let row; columns: gradeDefinitionColumns" mat-row></tr>
-      </table>
+        </tr>
+      </ng-template>
+    </p-table>
+    <div class="card-footer">
+      <p-button
+        icon="pi pi-plus"
+        label="Add grade"
+        severity="secondary"
+        [disabled]="isAddingGrade()"
+        [outlined]="true"
+        (onClick)="addGrade()"
+      />
     </div>
+  </p-card>
 
-    <div>
-      <button mat-stroked-button type="button" [disabled]="isAddingGrade()" (click)="addGrade()">
-        <mat-icon>add</mat-icon>
-        Add grade
-      </button>
-    </div>
-  </mat-card>
-
-  <mat-card appearance="outlined" class="flex flex-col p-2">
-    <f-setting-toggle label="Allow flexible dates" [(checked)]="unit.allowFlexibleDates">
-      Allows students to set planned due dates, without using extensions.
-    </f-setting-toggle>
-
-    <f-setting-toggle
-      class="border-t border-gray-200"
-      label="Allow student extensions"
-      [(checked)]="unit.allowStudentExtensionRequests"
-    >
-      When false only staff can request extensions on behalf of students.
-    </f-setting-toggle>
-
-    <f-setting-toggle
-      class="border-t border-gray-200"
-      label="Auto apply extensions"
-      [(checked)]="unit.autoApplyExtensionBeforeDeadline"
-    >
-      When true, extensions will be automatically applied when they result in a date that is between
-      the task's due date and deadline.
-    </f-setting-toggle>
-
-    <f-setting-toggle
-      class="border-t border-gray-200"
-      label="Has tasks assessed in portfolio"
-      [(checked)]="unit.markLateSubmissionsAsAssessInPortfolio"
-      (changed)="onToggleAssessInPortfolio($event)"
-    >
-      When enabled, late submissions will not be automatically marked as "Time Exceeded" or
-      "Feedback Exceeded", and will instead appear as "Assess in Portfolio". Tutors can still sign
-      off tasks as complete unless the task definition has the "Assess in Portfolio Only" option
-      enabled.
-    </f-setting-toggle>
-
-    <f-setting-toggle
-      class="border-t border-gray-200"
-      label="Allow students to change tutorial"
-      [(checked)]="unit.allowStudentChangeTutorial"
-    >
-      When false only staff can change student tutorials. When true, students may switch between
-      tutors who provide feedback on their work.
-    </f-setting-toggle>
-
-    <f-setting-toggle
-      class="border-t border-gray-200"
-      label="Require feedback before discussed in class"
-      [(checked)]="unit.enforceFeedbackBeforeDiscussedInClass"
-    >
-      When true, tutors must record feedback before they can mark discussion tasks as discussed in
-      class.
-    </f-setting-toggle>
-
-    <f-setting-toggle
-      class="border-t border-gray-200"
-      label="Discuss timeout"
-      [(checked)]="unit.discussTimeoutEnabled"
-    >
-      When enabled, students are warned when tasks stay in Discuss too long, then overdue tasks are
-      moved to Fix and Resubmit.
-    </f-setting-toggle>
-
-    @if (unit.discussTimeoutEnabled) {
-      <div class="flex w-full gap-3 px-2 pb-3">
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Warn after (days)</mat-label>
-          <input
-            matInput
-            min="0"
-            required
-            type="number"
-            [(ngModel)]="unit.discussTimeoutWarningDays"
-          />
-          <mat-hint>Creates a warning comment when the task is still in Discuss.</mat-hint>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Expire after (days)</mat-label>
-          <input
-            matInput
-            min="1"
-            required
-            type="number"
-            [(ngModel)]="unit.discussTimeoutExpireDays"
-          />
-          <mat-hint>Moves the task to Fix and Resubmit when it is still in Discuss.</mat-hint>
-        </mat-form-field>
+  <p-card header="Unit options">
+    <div class="option-list">
+      <label class="option-row"
+        ><span
+          ><strong>Allow flexible dates</strong
+          ><small>Students can set planned due dates without extensions.</small></span
+        ><p-toggleswitch [(ngModel)]="unit.allowFlexibleDates"
+      /></label>
+      <label class="option-row"
+        ><span
+          ><strong>Allow student extensions</strong
+          ><small>Students can request their own extensions.</small></span
+        ><p-toggleswitch [(ngModel)]="unit.allowStudentExtensionRequests"
+      /></label>
+      <label class="option-row"
+        ><span
+          ><strong>Auto-apply extensions</strong
+          ><small>Apply extensions that fall between the due date and deadline.</small></span
+        ><p-toggleswitch [(ngModel)]="unit.autoApplyExtensionBeforeDeadline"
+      /></label>
+      <label class="option-row"
+        ><span
+          ><strong>Assess late tasks in portfolio</strong
+          ><small>Late submissions appear as Assess in Portfolio.</small></span
+        ><p-toggleswitch
+          [(ngModel)]="unit.markLateSubmissionsAsAssessInPortfolio"
+          (ngModelChange)="onToggleAssessInPortfolio($event)"
+      /></label>
+      <label class="option-row"
+        ><span
+          ><strong>Allow tutorial changes</strong
+          ><small>Students can switch between tutors who provide feedback.</small></span
+        ><p-toggleswitch [(ngModel)]="unit.allowStudentChangeTutorial"
+      /></label>
+      <label class="option-row"
+        ><span
+          ><strong>Require feedback before class discussion</strong
+          ><small>Tutors must record feedback before marking tasks discussed.</small></span
+        ><p-toggleswitch [(ngModel)]="unit.enforceFeedbackBeforeDiscussedInClass"
+      /></label>
+      <div class="option-block">
+        <label class="option-row option-row-borderless"
+          ><span
+            ><strong>Discuss timeout</strong
+            ><small>Warns students, then moves expired tasks to Fix and Resubmit.</small></span
+          ><p-toggleswitch [(ngModel)]="unit.discussTimeoutEnabled"
+        /></label>
+        @if (unit.discussTimeoutEnabled) {
+          <div class="option-fields">
+            <label class="field"
+              ><span>Warn after (days) <b>*</b></span
+              ><p-inputnumber [min]="0" [(ngModel)]="unit.discussTimeoutWarningDays" /><small
+                >Creates a warning comment while the task remains in Discuss.</small
+              ></label
+            >
+            <label class="field"
+              ><span>Expire after (days) <b>*</b></span
+              ><p-inputnumber [min]="1" [(ngModel)]="unit.discussTimeoutExpireDays" /><small
+                >Moves the task to Fix and Resubmit.</small
+              ></label
+            >
+          </div>
+        }
       </div>
-    }
-
-    <f-setting-toggle
-      class="border-t border-gray-200"
-      label="Send notification emails"
-      [(checked)]="unit.sendNotifications"
-    >
-      When true, emails will be set to students each week to indicate progress and suggest future
-      tasks for them to work on.
-    </f-setting-toggle>
-
-    <f-setting-toggle
-      class="border-t border-gray-200"
-      label="Synchronise enrolments"
-      [(checked)]="unit.enableSyncEnrolments"
-    >
-      When true student enrolments will be synchronised with other systems where this is possible.
-    </f-setting-toggle>
-
-    <f-setting-toggle
-      class="border-t border-gray-200"
-      label="Synchronise timetable"
-      [(checked)]="unit.enableSyncTimetable"
-    >
-      When true timetable data will be synchronised with other systems where this is possible.
-    </f-setting-toggle>
-
-    <f-setting-toggle class="border-t border-gray-200" label="Active" [(checked)]="unit.active">
-      Set to false to hide unit from students and tutors.
-    </f-setting-toggle>
-  </mat-card>
+      <label class="option-row"
+        ><span
+          ><strong>Send notification emails</strong
+          ><small>Send weekly progress updates and suggested tasks.</small></span
+        ><p-toggleswitch [(ngModel)]="unit.sendNotifications"
+      /></label>
+      <label class="option-row"
+        ><span
+          ><strong>Synchronise enrolments</strong
+          ><small>Sync student enrolments with supported external systems.</small></span
+        ><p-toggleswitch [(ngModel)]="unit.enableSyncEnrolments"
+      /></label>
+      <label class="option-row"
+        ><span
+          ><strong>Synchronise timetable</strong
+          ><small>Sync timetable data with supported external systems.</small></span
+        ><p-toggleswitch [(ngModel)]="unit.enableSyncTimetable"
+      /></label>
+      <label class="option-row"
+        ><span
+          ><strong>Active</strong
+          ><small>Disable to hide this unit from students and tutors.</small></span
+        ><p-toggleswitch [(ngModel)]="unit.active"
+      /></label>
+    </div>
+  </p-card>
 
   @if (overseerEnabled.value) {
-    <mat-card class="gap-1 p-[16px]">
-      <f-setting-toggle
-        class="-mx-2 mb-2"
-        label="Overseer assessment"
-        [(checked)]="unit.assessmentEnabled"
-      >
-        If true, unit tasks will be able to make use of Overseer automated checking.
-      </f-setting-toggle>
-
-      <mat-form-field appearance="outline">
-        <mat-label>Overseer Docker Image</mat-label>
-        <mat-select [(ngModel)]="unit.overseerImage">
-          @for (image of dockerImages; track image) {
-            <mat-option [value]="image">{{ image.description }}</mat-option>
-          }
-        </mat-select>
-        <mat-hint
-          >Use this to select the default container used to check tasks with Overseer.</mat-hint
-        >
-      </mat-form-field>
-    </mat-card>
+    <p-card header="Overseer">
+      <div class="option-list">
+        <label class="option-row"
+          ><span
+            ><strong>Overseer assessment</strong
+            ><small>Allow unit tasks to use automated checking.</small></span
+          ><p-toggleswitch [(ngModel)]="unit.assessmentEnabled"
+        /></label>
+      </div>
+      <label class="field overseer-select">
+        <span>Overseer Docker image</span>
+        <p-select
+          appendTo="body"
+          optionLabel="description"
+          placeholder="Select a Docker image"
+          [options]="dockerImages"
+          [showClear]="true"
+          [(ngModel)]="unit.overseerImage"
+        />
+        <small>Select the default container used to check tasks.</small>
+      </label>
+    </p-card>
   }
 
-  <div class="flex w-full justify-end gap-3">
-    <button mat-raised-button [hidden]="!d2lEnabled.value" (click)="addD2lData()">
-      D2L Details
-    </button>
-    <button
-      mat-raised-button
-      matTooltip="Rollover the unit into a new teaching period"
-      matTooltipShowDelay="1000"
+  <footer class="editor-actions">
+    <p-button
+      label="D2L details"
+      severity="secondary"
+      [hidden]="!d2lEnabled.value"
+      [outlined]="true"
+      (onClick)="addD2lData()"
+    />
+    <p-button
+      icon="pi pi-copy"
+      label="Copy unit"
+      pTooltip="Rollover the unit into a new teaching period"
+      severity="secondary"
+      [outlined]="true"
       [routerLink]="['/units', unit.id, 'rollover']"
-    >
-      Copy
-    </button>
-  </div>
-</div>
-<div class="fixed right-[50px] bottom-[50px] z-50">
-  <div>
-    <button color="primary" mat-fab (click)="saveUnit()">
-      <mat-icon>save</mat-icon>
-    </button>
-  </div>
+    />
+    <p-button icon="pi pi-save" label="Save changes" (onClick)="saveUnit()" />
+  </footer>
 </div>

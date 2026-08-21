@@ -1,0 +1,194 @@
+:host {
+  display: block;
+  --editor-border: color-mix(in srgb, var(--p-surface-400) 34%, transparent);
+  --editor-muted: var(--p-text-muted-color);
+}
+
+.unit-editor {
+  display: grid;
+  gap: 1.25rem;
+  width: min(100%, 76rem);
+  margin-inline: auto;
+  padding-bottom: 2rem;
+}
+.editor-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 0.5rem 0 0.25rem;
+  h2 {
+    margin: 0.2rem 0 0.35rem;
+    font-size: clamp(1.75rem, 3vw, 2.35rem);
+    font-weight: 700;
+    letter-spacing: -0.035em;
+  }
+  p {
+    margin: 0;
+    color: var(--editor-muted);
+  }
+}
+.eyebrow {
+  color: var(--p-primary-color);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+.field {
+  display: grid;
+  align-content: start;
+  gap: 0.5rem;
+  min-width: 0;
+  font-weight: 600;
+  b {
+    color: var(--p-red-500);
+  }
+  small {
+    color: var(--editor-muted);
+    font-weight: 400;
+    line-height: 1.4;
+  }
+}
+.field-wide {
+  grid-column: 1 / -1;
+}
+input[pInputText],
+textarea[pTextarea],
+:host ::ng-deep .p-select,
+:host ::ng-deep .p-datepicker,
+:host ::ng-deep .p-inputnumber,
+:host ::ng-deep .p-inputnumber-input {
+  width: 100%;
+}
+.section-copy {
+  margin-bottom: 1.25rem;
+  color: var(--editor-muted);
+  p {
+    margin: 0.2rem 0;
+  }
+}
+.grade-index,
+.grade-code {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.75rem;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  background: var(--p-surface-100);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+.grade-code {
+  border-radius: 0.4rem;
+  color: var(--p-primary-color);
+}
+.actions-column {
+  text-align: right;
+}
+.button-row {
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+}
+.button-row-end,
+.card-footer,
+.editor-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+.card-footer {
+  padding-top: 1.25rem;
+}
+.option-list {
+  display: grid;
+}
+.option-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--editor-border);
+  cursor: pointer;
+  > span {
+    display: grid;
+    gap: 0.25rem;
+  }
+  strong {
+    font-weight: 650;
+  }
+  small {
+    color: var(--editor-muted);
+    line-height: 1.4;
+  }
+}
+.option-list > :first-child {
+  padding-top: 0;
+}
+.option-list > :last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+.option-block {
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--editor-border);
+}
+.option-row-borderless {
+  padding: 0;
+  border: 0;
+}
+.option-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: 1.25rem;
+  padding: 1.25rem;
+  border-radius: var(--p-border-radius-xl);
+  background: var(--p-surface-50);
+}
+.overseer-select {
+  margin-top: 1.25rem;
+}
+.editor-actions {
+  gap: 0.75rem;
+  padding-top: 0.25rem;
+}
+:host ::ng-deep {
+  .p-card {
+    border: 1px solid var(--editor-border);
+    box-shadow: 0 8px 28px color-mix(in srgb, var(--p-surface-900) 7%, transparent);
+  }
+  .p-card-title {
+    font-size: 1.05rem;
+    letter-spacing: -0.01em;
+  }
+  .p-datatable-table-container {
+    border: 1px solid var(--editor-border);
+    border-radius: var(--p-border-radius-lg);
+  }
+}
+@media (max-width: 700px) {
+  .editor-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .form-grid,
+  .option-fields {
+    grid-template-columns: 1fr;
+  }
+  .field-wide {
+    grid-column: auto;
+  }
+  .option-row {
+    gap: 1rem;
+  }
+  .editor-actions {
+    flex-wrap: wrap;
+  }
+}

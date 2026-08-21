@@ -1,216 +1,174 @@
-<div class="p-7" style="min-width: 600px; min-height: 600px flex flex-col">
-  <mat-tab-group class="mb-5">
-    <mat-tab label="Edit Teaching Period">
-      <ng-template [ngTemplateOutlet]="EditTeachingPeriod"></ng-template
-    ></mat-tab>
-    <mat-tab label="Edit Breaks" [disabled]="!newOrSelectedTeachingPeriod.id">
-      <ng-template [ngTemplateOutlet]="EditBreaks"></ng-template>
-    </mat-tab>
-    <!-- TODO: Write rollover -->
-    <!-- <mat-tab [disabled]="!newOrSelectedTeachingPeriod.id" label="Import Units">
-      <ng-template [ngTemplateOutlet]="ImportUnits"></ng-template>
-    </mat-tab> -->
-  </mat-tab-group>
-  <div class="bottom-3.5 flex justify-end space-x-2.5 self-end">
-    <button class="" mat-dialog-close mat-stroked-button>Cancel</button>
-    <button class="ml-2.5" color="primary" mat-flat-button (click)="submitTeachingPeriod()">
+<div class="min-h-[560px]">
+  <nz-tabs>
+    <nz-tab nzTitle="Edit Teaching Period">
+      <form class="pt-5" nz-form nzLayout="vertical">
+        <nz-form-item>
+          <nz-form-label nzRequired>Teaching Period Name</nz-form-label>
+          <nz-form-control>
+            <input name="name" nz-input required [(ngModel)]="newOrSelectedTeachingPeriod.period" />
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label nzRequired>Teaching Period Year</nz-form-label>
+          <nz-form-control>
+            <nz-input-number
+              class="w-full"
+              name="year"
+              [(ngModel)]="newOrSelectedTeachingPeriod.year"
+            ></nz-input-number>
+          </nz-form-control>
+        </nz-form-item>
+        <div class="grid grid-cols-2 gap-4">
+          <nz-form-item>
+            <nz-form-label nzRequired>Start Date</nz-form-label>
+            <nz-form-control>
+              <nz-date-picker
+                class="w-full"
+                name="startDate"
+                nzFormat="dd/MM/yyyy"
+                [(ngModel)]="newOrSelectedTeachingPeriod.startDate"
+              ></nz-date-picker>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzRequired>End Date</nz-form-label>
+            <nz-form-control>
+              <nz-date-picker
+                class="w-full"
+                name="endDate"
+                nzFormat="dd/MM/yyyy"
+                [(ngModel)]="newOrSelectedTeachingPeriod.endDate"
+              ></nz-date-picker>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <nz-form-item>
+          <nz-form-label nzRequired>Active Until</nz-form-label>
+          <nz-form-control nzExtra="DD/MM/YYYY">
+            <nz-date-picker
+              class="w-full"
+              name="activeUntil"
+              nzFormat="dd/MM/yyyy"
+              [(ngModel)]="newOrSelectedTeachingPeriod.activeUntil"
+            ></nz-date-picker>
+          </nz-form-control>
+        </nz-form-item>
+      </form>
+    </nz-tab>
+
+    <nz-tab nzTitle="Edit Breaks" [nzDisabled]="!newOrSelectedTeachingPeriod.id">
+      <h4 class="pt-5">Teaching Breaks for {{ newOrSelectedTeachingPeriod.name }}</h4>
+      <nz-list nzBordered>
+        @for (teachingBreak of teachingBreaks$ | async; track teachingBreak.id) {
+          <nz-list-item>
+            @if (editingBreak?.id === teachingBreak.id) {
+              <form class="grid w-full grid-cols-[1fr_1.5fr_1fr_auto] items-start gap-3" nz-form>
+                <nz-date-picker
+                  name="editBreakStartDate"
+                  nzFormat="dd/MM/yyyy"
+                  [(ngModel)]="editingBreak.startDate"
+                ></nz-date-picker>
+                <nz-select
+                  name="editBreakCampuses"
+                  nzMode="multiple"
+                  nzPlaceHolder="All campuses"
+                  [(ngModel)]="editingBreak.campusIds"
+                >
+                  @for (campus of campuses; track campus.id) {
+                    <nz-option [nzLabel]="campus.name" [nzValue]="campus.id"></nz-option>
+                  }
+                </nz-select>
+                <nz-input-number
+                  name="editBreakNumWeeks"
+                  [nzMin]="1"
+                  [(ngModel)]="editingBreak.numberOfWeeks"
+                ></nz-input-number>
+                <div class="inline-flex">
+                  <button
+                    nz-button
+                    nzType="primary"
+                    type="button"
+                    [disabled]="!(editingBreak.startDate && editingBreak.numberOfWeeks)"
+                    (click)="saveTeachingBreak(teachingBreak)"
+                  >
+                    <span nz-icon nzType="save"></span>
+                  </button>
+                  <button nz-button type="button" (click)="cancelEditingBreak()">
+                    <span nz-icon nzType="close"></span>
+                  </button>
+                </div>
+              </form>
+            } @else {
+              <div class="flex w-full items-center">
+                <div>
+                  <strong>{{ teachingBreak.startDate | date }}</strong>
+                  <div>{{ teachingBreak.numberOfWeeks }} week(s)</div>
+                  <div>
+                    {{
+                      teachingBreak.campusIds.length
+                        ? 'Campuses: ' + campusNames(teachingBreak.campusIds)
+                        : 'All campuses'
+                    }}
+                  </div>
+                </div>
+                <span class="grow"></span>
+                <div class="inline-flex">
+                  <button nz-button (click)="editTeachingBreak(teachingBreak)">
+                    <span nz-icon nzType="edit"></span>
+                  </button>
+                  <button
+                    nz-button
+                    nz-popconfirm
+                    nzDanger
+                    nzPopconfirmTitle="Delete this break?"
+                    (nzOnConfirm)="deleteBreak(newOrSelectedTeachingPeriod, teachingBreak)"
+                  >
+                    <span nz-icon nzType="delete"></span>
+                  </button>
+                </div>
+              </div>
+            }
+          </nz-list-item>
+        }
+      </nz-list>
+
+      <form class="mt-5 grid grid-cols-[1fr_1.5fr_1fr_auto] items-start gap-3" nz-form>
+        <nz-date-picker
+          name="breakStartDate"
+          nzFormat="dd/MM/yyyy"
+          [(ngModel)]="tempBreak.startDate"
+        ></nz-date-picker>
+        <nz-select
+          name="breakCampuses"
+          nzMode="multiple"
+          nzPlaceHolder="All campuses"
+          [(ngModel)]="tempBreak.campusIds"
+        >
+          @for (campus of campuses; track campus.id) {
+            <nz-option [nzLabel]="campus.name" [nzValue]="campus.id"></nz-option>
+          }
+        </nz-select>
+        <nz-input-number
+          name="breakNumWeeks"
+          [nzMin]="1"
+          [(ngModel)]="tempBreak.numberOfWeeks"
+        ></nz-input-number>
+        <button
+          nz-button
+          nzType="primary"
+          [disabled]="!(tempBreak.startDate && tempBreak.numberOfWeeks)"
+          (click)="addTeachingBreak()"
+        >
+          <span nz-icon nzType="plus"></span>
+        </button>
+      </form>
+    </nz-tab>
+  </nz-tabs>
+
+  <div class="mt-5 flex justify-end gap-2">
+    <button nz-button (click)="close()">Cancel</button>
+    <button nz-button nzType="primary" (click)="submitTeachingPeriod()">
       {{ newOrSelectedTeachingPeriod.id ? 'Save' : 'Create' }}
     </button>
   </div>
 </div>
-
-<ng-template #EditTeachingPeriod>
-  <form class="teaching-period-form mx-3.5 flex flex-col overflow-hidden pt-7">
-    <mat-form-field appearance="outline">
-      <mat-label>Teaching Period Name</mat-label>
-      <input
-        matInput
-        name="name"
-        required
-        type="text"
-        [(ngModel)]="newOrSelectedTeachingPeriod.period"
-      />
-    </mat-form-field>
-    <mat-form-field appearance="outline">
-      <mat-label>Teaching Period Year</mat-label>
-      <input
-        matInput
-        name="year"
-        required
-        type="number"
-        [(ngModel)]="newOrSelectedTeachingPeriod.year"
-      />
-    </mat-form-field>
-
-    <mat-form-field appearance="outline">
-      <mat-label>Start and end date</mat-label>
-      <mat-date-range-input [rangePicker]="picker">
-        <input
-          matStartDate
-          name="startDate"
-          placeholder="Start date"
-          required
-          [(ngModel)]="newOrSelectedTeachingPeriod.startDate"
-        />
-        <input
-          matEndDate
-          name="endDate"
-          placeholder="End date"
-          required
-          [(ngModel)]="newOrSelectedTeachingPeriod.endDate"
-        />
-      </mat-date-range-input>
-
-      <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-      <mat-date-range-picker #picker></mat-date-range-picker>
-    </mat-form-field>
-
-    <mat-form-field appearance="outline">
-      <mat-label>Active Until</mat-label>
-      <input
-        matInput
-        name="activeUntil"
-        required
-        [matDatepicker]="activeUntilPicker"
-        [(ngModel)]="newOrSelectedTeachingPeriod.activeUntil"
-      />
-      <mat-hint>DD/MM/YYYY</mat-hint>
-      <mat-datepicker-toggle matIconSuffix [for]="activeUntilPicker"></mat-datepicker-toggle>
-      <mat-datepicker #activeUntilPicker></mat-datepicker>
-    </mat-form-field>
-  </form>
-</ng-template>
-
-<ng-template #EditBreaks>
-  <h4 class="pt-5">Teaching Breaks for {{ newOrSelectedTeachingPeriod.name }}</h4>
-  <mat-list>
-    @for (break of teachingBreaks$ | async; track break) {
-      <mat-list-item class="!h-auto py-2">
-        @if (editingBreak?.id === break.id) {
-          <form class="flex w-full items-center gap-3.5 pt-3">
-            <mat-form-field appearance="outline">
-              <mat-label>Break Start Date</mat-label>
-              <input
-                matInput
-                name="editBreakStartDate"
-                required
-                [matDatepicker]="editBreakStartDatePicker"
-                [(ngModel)]="editingBreak.startDate"
-              />
-              <mat-datepicker-toggle
-                matIconSuffix
-                [for]="editBreakStartDatePicker"
-              ></mat-datepicker-toggle>
-              <mat-datepicker #editBreakStartDatePicker></mat-datepicker>
-            </mat-form-field>
-
-            <mat-form-field appearance="outline">
-              <mat-label>Campuses</mat-label>
-              <mat-select multiple name="editBreakCampuses" [(ngModel)]="editingBreak.campusIds">
-                @for (campus of campuses; track campus.id) {
-                  <mat-option [value]="campus.id">{{ campus.name }}</mat-option>
-                }
-              </mat-select>
-              <mat-hint>Leave empty to apply to all campuses</mat-hint>
-            </mat-form-field>
-
-            <mat-form-field appearance="outline">
-              <mat-label>Number of weeks</mat-label>
-              <input
-                matInput
-                name="editBreakNumWeeks"
-                required
-                type="number"
-                [(ngModel)]="editingBreak.numberOfWeeks"
-              />
-            </mat-form-field>
-
-            <span class="grow"></span>
-            <button
-              mat-icon-button
-              type="button"
-              [disabled]="!(editingBreak.startDate && editingBreak.numberOfWeeks)"
-              (click)="saveTeachingBreak(break)"
-            >
-              <mat-icon>save</mat-icon>
-            </button>
-            <button mat-icon-button type="button" (click)="cancelEditingBreak()">
-              <mat-icon>close</mat-icon>
-            </button>
-          </form>
-        } @else {
-          <span class="flex items-center">
-            <span>
-              <span matListItemTitle>{{ break.startDate | date }}</span>
-              <span matListItemLine>{{ break.numberOfWeeks }} week(s)</span>
-              <span matListItemLine>
-                {{
-                  break.campusIds.length
-                    ? 'Campuses: ' + campusNames(break.campusIds)
-                    : 'All campuses'
-                }}
-              </span>
-            </span>
-            <span class="grow"></span>
-            <button mat-icon-button (click)="editTeachingBreak(break)">
-              <mat-icon>edit</mat-icon>
-            </button>
-            <button mat-icon-button (click)="deleteBreak(newOrSelectedTeachingPeriod, break)">
-              <mat-icon>delete</mat-icon>
-            </button>
-          </span>
-        }
-      </mat-list-item>
-    }
-  </mat-list>
-
-  <form class="mx-3.5 overflow-hidden pt-7">
-    <span class="flex items-center gap-3.5">
-      <mat-form-field appearance="outline">
-        <mat-label>Break Start Date</mat-label>
-        <input
-          matInput
-          name="breakStartDate"
-          required
-          [matDatepicker]="breakStartDatePicker"
-          [(ngModel)]="tempBreak.startDate"
-        />
-        <mat-hint>MM/DD/YYYY</mat-hint>
-        <mat-datepicker-toggle matIconSuffix [for]="breakStartDatePicker"></mat-datepicker-toggle>
-        <mat-datepicker #breakStartDatePicker></mat-datepicker>
-      </mat-form-field>
-
-      <mat-form-field appearance="outline">
-        <mat-label>Campuses</mat-label>
-        <mat-select multiple name="breakCampuses" [(ngModel)]="tempBreak.campusIds">
-          @for (campus of campuses; track campus.id) {
-            <mat-option [value]="campus.id">{{ campus.name }}</mat-option>
-          }
-        </mat-select>
-        <mat-hint>Leave empty to apply to all campuses</mat-hint>
-      </mat-form-field>
-
-      <!-- <span class="grow"></span> -->
-      <mat-form-field appearance="outline">
-        <mat-label>Number of weeks</mat-label>
-        <input
-          matInput
-          name="breakNumWeeks"
-          required
-          type="number"
-          [(ngModel)]="tempBreak.numberOfWeeks"
-        />
-      </mat-form-field>
-
-      <button
-        class="self-start"
-        mat-icon-button
-        [disabled]="!(tempBreak.startDate && tempBreak.numberOfWeeks)"
-        (click)="addTeachingBreak()"
-      >
-        <mat-icon>add_circle</mat-icon>
-      </button>
-    </span>
-  </form>
-</ng-template>
-<ng-template #ImportUnits></ng-template>

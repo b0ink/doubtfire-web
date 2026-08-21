@@ -1,39 +1,25 @@
-<mat-dialog-content class="mat-typography">
-  <div class="modal-header">
-    <h1>D2L Unit Details</h1>
-  </div>
-  <div class="modal-body">
-    <p>Enter the D2L identifier to allow grades to be transfered once entered.</p>
-    <mat-form-field appearance="outline">
-      <input
-        matInput
-        name="orgUnitId"
-        placeholder="Org Unit Id"
-        required
-        type="text"
-        [(ngModel)]="d2lDataMapping.orgUnitId"
-      />
-    </mat-form-field>
-    <mat-form-field appearance="outline">
-      <input
-        matInput
-        name="orgUnitId"
-        placeholder="Grade Object Id"
-        type="text"
-        [(ngModel)]="d2lDataMapping.gradeObjectId"
-      />
-      <mat-hint align="start">Created during grades transfer if not set</mat-hint>
-    </mat-form-field>
-  </div>
-</mat-dialog-content>
-<mat-dialog-actions align="end">
+<p class="dialog-intro">Enter the D2L identifiers used when transferring grades.</p>
+
+<div class="dialog-fields">
+  <label class="field">
+    <span>Org Unit ID <span class="required">*</span></span>
+    <input pInputText required [(ngModel)]="d2lDataMapping.orgUnitId" />
+  </label>
+  <label class="field">
+    <span>Grade Object ID</span>
+    <input pInputText [(ngModel)]="d2lDataMapping.gradeObjectId" />
+    <small>Created during grades transfer if not set.</small>
+  </label>
+</div>
+
+<div class="dialog-actions">
   @if (d2lDataMapping.id) {
-    <button color="warn" mat-stroked-button (click)="delete()">Delete</button>
+    <p-button label="Delete" severity="danger" [outlined]="true" (onClick)="delete()" />
   }
-  <button class="pull-right" mat-stroked-button (click)="saveAndClose()">
-    @if (d2lDataMapping.hasChanges(d2lAssessmentMappingService.mapping)) {
-      <span>Save and </span>
-    }
-    Close
-  </button>
-</mat-dialog-actions>
+  <p-button
+    [label]="
+      d2lDataMapping.hasChanges(d2lAssessmentMappingService.mapping) ? 'Save and close' : 'Close'
+    "
+    (onClick)="saveAndClose()"
+  />
+</div>

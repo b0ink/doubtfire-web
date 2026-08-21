@@ -2,72 +2,52 @@
   <div class="my-6 flex items-center">
     <h1 class="my-0">Teaching periods</h1>
     <span class="grow"></span>
-    <button color="primary" mat-flat-button (click)="addTeachingPeriod()">
+    <button nz-button nzType="primary" (click)="addTeachingPeriod()">
+      <span nz-icon nzType="plus"></span>
       Add new teaching period
     </button>
   </div>
-  <table
-    #table
-    class=""
-    mat-table
-    matSort
-    matSortActive="startDate"
-    matSortDirection="desc"
-    [dataSource]="dataSource"
-    (matSortChange)="sortTableData($event)"
+
+  <nz-table
+    #periodTable
+    nzShowSizeChanger
+    [nzData]="teachingPeriods"
+    [nzPageSizeOptions]="[10, 25, 100]"
   >
-    <ng-container matColumnDef="active">
-      <th *matHeaderCellDef mat-header-cell mat-sort-header>Active</th>
-      <td *matCellDef="let element" mat-cell>
-        <mat-checkbox color="primary" disabled [checked]="element.active"> </mat-checkbox>
-      </td>
-    </ng-container>
-
-    <ng-container matColumnDef="name">
-      <th *matHeaderCellDef mat-header-cell mat-sort-header>Name</th>
-      <td *matCellDef="let element" mat-cell>{{ element.name }}</td>
-    </ng-container>
-
-    <ng-container matColumnDef="startDate">
-      <th *matHeaderCellDef mat-header-cell mat-sort-header>Start Date</th>
-      <td *matCellDef="let element" mat-cell>{{ element.startDate | date }}</td>
-    </ng-container>
-
-    <ng-container matColumnDef="endDate">
-      <th *matHeaderCellDef mat-header-cell mat-sort-header>End date</th>
-      <td *matCellDef="let element" mat-cell>{{ element.endDate | date }}</td>
-    </ng-container>
-
-    <ng-container matColumnDef="activeUntil">
-      <th *matHeaderCellDef mat-header-cell mat-sort-header>Active until</th>
-      <td *matCellDef="let element" mat-cell>{{ element.activeUntil | date }}</td>
-    </ng-container>
-
-    <ng-container matColumnDef="actions">
-      <th *matHeaderCellDef mat-header-cell>Actions</th>
-      <td *matCellDef="let element" mat-cell>
-        <div class="edit-actions right">
-          <span>
-            <button aria-label="import units" mat-icon-button (click)="importUnits(element)">
-              <mat-icon>input</mat-icon>
-            </button>
-            <button
-              aria-label="select teaching period"
-              mat-icon-button
-              (click)="selectTeachingPeriod(element)"
-            >
-              <mat-icon>edit</mat-icon>
-            </button>
-          </span>
-        </div>
-      </td>
-    </ng-container>
-
-    <tr *matHeaderRowDef="displayedColumns" mat-header-row></tr>
-    <tr *matRowDef="let row; columns: displayedColumns" mat-row></tr>
-  </table>
-  <mat-paginator
-    aria-label="Select page of teaching periods"
-    [pageSizeOptions]="[10, 25, 100]"
-  ></mat-paginator>
+    <thead>
+      <tr>
+        <th [nzSortFn]="compareActive">Active</th>
+        <th [nzSortFn]="compareName">Name</th>
+        <th nzSortOrder="descend" [nzSortFn]="compareStartDate">Start Date</th>
+        <th [nzSortFn]="compareEndDate">End Date</th>
+        <th [nzSortFn]="compareActiveUntil">Active Until</th>
+        <th nzRight>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (period of periodTable.data; track period.id) {
+        <tr>
+          <td><label disabled nz-checkbox [ngModel]="period.active"></label></td>
+          <td>{{ period.name }}</td>
+          <td>{{ period.startDate | date }}</td>
+          <td>{{ period.endDate | date }}</td>
+          <td>{{ period.activeUntil | date }}</td>
+          <td nzRight>
+            <div class="inline-flex">
+              <button aria-label="Import units" nz-button (click)="importUnits(period)">
+                <span nz-icon nzType="import"></span>
+              </button>
+              <button
+                aria-label="Edit teaching period"
+                nz-button
+                (click)="selectTeachingPeriod(period)"
+              >
+                <span nz-icon nzType="edit"></span>
+              </button>
+            </div>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </nz-table>
 </div>

@@ -1,5 +1,4 @@
 import {ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
-import {MatTabChangeEvent} from '@angular/material/tabs';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Subscription} from 'rxjs';
 import {DoubtfireConstants} from 'src/app/config/constants/doubtfire-constants';
@@ -78,8 +77,8 @@ export class InstitutionSettingsComponent implements OnInit, OnDestroy {
     return this.constants.IsTiiEnabled.value;
   }
 
-  public onTabChange(event: MatTabChangeEvent): void {
-    const nextTab = this.tabs[event.index] ?? this.tabs[0];
+  public onTabChange(index: number): void {
+    const nextTab = this.tabs[index] ?? this.tabs[0];
     this.currentTab = nextTab;
     this.router.navigate(['/admin/institution-settings', nextTab.routeSegment], {replaceUrl: true});
   }

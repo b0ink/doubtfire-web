@@ -1,5 +1,5 @@
+import {NzModalService} from 'ng-zorro-antd/modal';
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {MatDialog} from '@angular/material/dialog';
 import {CreateNewUnitModalContentComponent} from './create-new-unit-modal-content.component';
 
 @Component({
@@ -9,10 +9,13 @@ import {CreateNewUnitModalContentComponent} from './create-new-unit-modal-conten
   standalone: false,
 })
 export class CreateNewUnitModal {
-  constructor(public dialog: MatDialog) {}
+  constructor(public modal: NzModalService) {}
   public show(): void {
-    this.dialog.open(CreateNewUnitModalContentComponent, {
-      width: '500px',
+    this.modal.create({
+      nzTitle: 'Create Unit',
+      nzContent: CreateNewUnitModalContentComponent,
+      nzFooter: null,
+      nzWidth: 500,
     });
   }
 }

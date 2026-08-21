@@ -2,89 +2,49 @@
   <div class="my-6 flex items-center">
     <h1>Turnitin Actions</h1>
     <span class="flex-grow"></span>
-    <div>
-      <mat-form-field appearance="outline">
-        <input
-          matInput
-          placeholder="Filter"
-          [(ngModel)]="filter"
-          (keyup)="applyFilter($event.target.value)"
-        />
-      </mat-form-field>
-    </div>
+    <nz-input-group nzPrefixIcon="search">
+      <input nz-input placeholder="Filter actions" [(ngModel)]="filter" />
+    </nz-input-group>
   </div>
 
-  <table
-    class="f-table selectable flex-grow"
-    mat-table
-    matSort
-    [dataSource]="tiiActionsSource"
-    (matSortChange)="sortData($event)"
-  >
-    <ng-container matColumnDef="type" sticky>
-      <th *matHeaderCellDef mat-header-cell mat-sort-header>Action Type</th>
-      <td *matCellDef="let action" mat-cell>
-        {{ action.description }}
-      </td>
-    </ng-container>
-    <ng-container matColumnDef="lastRun" sticky>
-      <th *matHeaderCellDef mat-header-cell mat-sort-header>Last Run</th>
-      <td *matCellDef="let action" mat-cell>
-        {{ action.lastRun ? (action.lastRun | date: 'd LLL y') : '' }}
-      </td>
-    </ng-container>
-    <ng-container matColumnDef="retries" sticky>
-      <th *matHeaderCellDef mat-header-cell mat-sort-header>Retries</th>
-      <td *matCellDef="let action" mat-cell>
-        {{ action.retries }}
-      </td>
-    </ng-container>
-    <ng-container matColumnDef="retry" sticky>
-      <th *matHeaderCellDef mat-header-cell mat-sort-header>Retry?</th>
-      <td *matCellDef="let action" mat-cell>
-        {{ action.retry }}
-      </td>
-    </ng-container>
-    <ng-container matColumnDef="errorCode" sticky>
-      <th *matHeaderCellDef mat-header-cell mat-sort-header>Error Code</th>
-      <td *matCellDef="let action" mat-cell>
-        {{ action.errorCode }}
-      </td>
-    </ng-container>
-    <ng-container matColumnDef="complete" sticky>
-      <th *matHeaderCellDef mat-header-cell mat-sort-header>Complete?</th>
-      <td *matCellDef="let action" mat-cell>
-        {{ action.complete }}
-      </td>
-    </ng-container>
-    <ng-container matColumnDef="errorMessage" sticky>
-      <th *matHeaderCellDef mat-header-cell mat-sort-header>Error Message</th>
-      <td *matCellDef="let action" mat-cell>
-        {{ action.errorMessage }}
-      </td>
-    </ng-container>
-
-    <ng-container matColumnDef="tiiActionTools" sticky>
-      <th *matHeaderCellDef mat-header-cell></th>
-      <td *matCellDef="let action" mat-cell>
-        @if (!(action.complete || action.retry)) {
-          <button aria-label="retry" color="primary" mat-icon-button (click)="retryAction(action)">
-            <mat-icon>redo</mat-icon>
-          </button>
-        }
-      </td>
-    </ng-container>
-
-    <!-- Action footer row -->
-    <ng-container matColumnDef="actions">
-      <td *matFooterCellDef mat-footer-cell [colSpan]="columns.length"></td>
-    </ng-container>
-
-    <tr *matHeaderRowDef="columns" mat-header-row></tr>
-    <tr
-      *matRowDef="let row; columns: columns"
-      mat-row
-      [style.background]="selectedTaskDefinition === row ? 'lightblue' : ''"
-    ></tr>
-  </table>
+  <nz-table #actionTable class="f-table selectable" nzShowSizeChanger [nzData]="filteredActions">
+    <thead>
+      <tr>
+        <th [nzSortFn]="compareType">Action Type</th>
+        <th [nzSortFn]="compareLastRun">Last Run</th>
+        <th [nzSortFn]="compareRetries">Retries</th>
+        <th>Retry?</th>
+        <th>Error Message</th>
+        <th nzRight></th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (action of actionTable.data; track action.id) {
+        <tr [class.ant-table-row-selected]="selectedTaskDefinition === action">
+          <td>{{ action.description }}</td>
+          <td>{{ action.lastRun ? (action.lastRun | date: 'd LLL y') : '' }}</td>
+          <td>{{ action.retries }}</td>
+          <td>
+            <nz-tag [nzColor]="action.retry ? 'processing' : 'default'">
+              {{ action.retry ? 'Queued' : 'No' }}
+            </nz-tag>
+          </td>
+          <td>{{ action.errorMessage }}</td>
+          <td nzRight>
+            @if (!(action.complete || action.retry)) {
+              <button
+                aria-label="Retry action"
+                nz-button
+                nzType="primary"
+                (click)="retryAction(action)"
+              >
+                <span nz-icon nzType="redo"></span>
+                Retry
+              </button>
+            }
+          </td>
+        </tr>
+      }
+    </tbody>
+  </nz-table>
 </div>

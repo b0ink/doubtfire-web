@@ -1,22 +1,25 @@
-<h1 mat-dialog-title>Import Units Into {{ data.teachingPeriod.name }}</h1>
-<div mat-dialog-content>
-  <table mat-table [dataSource]="dataSource">
-    <ng-container matColumnDef="unitCode">
-      <th *matHeaderCellDef mat-header-cell>Unit Code</th>
-      <td *matCellDef="let unitToImport" mat-cell>
-        <mat-form-field appearance="outline">
-          <input
-            matInput
-            [(ngModel)]="unitToImport.unitCode"
-            (input)="codeChange($event.target.value, unitToImport)"
-          />
-        </mat-form-field>
+<nz-table #importTable nzBordered [nzData]="unitsToImport" [nzShowPagination]="false">
+  <thead>
+    <tr>
+      <th>Unit Code</th>
+      <th>Source Unit</th>
+      <th>Unit Name</th>
+      <th>Main Convenor</th>
+      <th>Status</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (unitToImport of importTable.data; track unitToImport.unitCode) {
+    <tr>
+      <td>
+        <input
+          nz-input
+          [(ngModel)]="unitToImport.unitCode"
+          (ngModelChange)="codeChange($event, unitToImport)"
+        />
       </td>
-    </ng-container>
-
-    <ng-container matColumnDef="sourceUnit">
-      <th *matHeaderCellDef mat-header-cell>Source Unit</th>
-      <td *matCellDef="let unitToImport" mat-cell>
+      <td>
         <object-select
           placeholder="New Unit"
           [source]="unitToImport.relatedUnits"
@@ -24,69 +27,49 @@
           (targetChange)="changeSourceUnit(unitToImport, $event)"
         ></object-select>
       </td>
-    </ng-container>
-
-    <ng-container matColumnDef="unitName">
-      <th *matHeaderCellDef mat-header-cell>Unit Name</th>
-      <td *matCellDef="let unitToImport" mat-cell>
-        @if (unitToImport.sourceUnit) {
-        <span>{{ unitToImport.sourceUnit.name }}</span>
-        } @if (!unitToImport.sourceUnit) {
-        <mat-form-field appearance="outline">
-          <mat-label>Unit Name</mat-label>
-          <input matInput [(ngModel)]="unitToImport.unitName" />
-        </mat-form-field>
+      <td>
+        @if (unitToImport.sourceUnit) { {{ unitToImport.sourceUnit.name }} } @else {
+        <input nz-input placeholder="Unit name" [(ngModel)]="unitToImport.unitName" />
         }
       </td>
-    </ng-container>
-
-    <ng-container matColumnDef="convenor">
-      <th *matHeaderCellDef mat-header-cell>Main Convenor</th>
-      <td *matCellDef="let unitToImport" mat-cell>
-        <mat-form-field appearance="outline">
-          <input
-            matInput
-            type="text"
-            [formControl]="unitToImport.convenorFormControl"
-            [matAutocomplete]="auto"
-            [(ngModel)]="unitToImport.convenor"
-          />
-          <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
-            @for (staff of filteredStaffFor(unitToImport) | async; track staff) {
-            <mat-option [value]="staff"> {{staff.name}} </mat-option>
-            }
-          </mat-autocomplete>
-        </mat-form-field>
+      <td>
+        <nz-select
+          class="w-full min-w-[220px]"
+          nzAllowClear
+          nzPlaceHolder="Select convenor"
+          nzShowSearch
+          [(ngModel)]="unitToImport.convenor"
+        >
+          @for (staff of teachingStaff; track staff.id) {
+          <nz-option [nzLabel]="staff.name" [nzValue]="staff"></nz-option>
+          }
+        </nz-select>
       </td>
-    </ng-container>
-
-    <ng-container matColumnDef="status">
-      <th *matHeaderCellDef mat-header-cell>Status</th>
-      <td *matCellDef="let unitToImport" mat-cell>
-        <span>{{ statusForUnit(unitToImport) }}</span>
+      <td>
+        <nz-tag
+          [nzColor]="unitToImport.done === true ? 'success' : unitToImport.done === false ? 'error' : 'processing'"
+        >
+          {{ statusForUnit(unitToImport) }}
+        </nz-tag>
       </td>
-    </ng-container>
-
-    <ng-container matColumnDef="actions">
-      <th *matHeaderCellDef mat-header-cell></th>
-      <td *matCellDef="let unitToImport" mat-cell>
-        <button mat-button (click)="removeUnitToAdd(unitToImport)">Remove</button>
+      <td>
+        <button nz-button nzDanger nzType="text" (click)="removeUnitToAdd(unitToImport)">
+          Remove
+        </button>
       </td>
-    </ng-container>
+    </tr>
+    }
+  </tbody>
+</nz-table>
 
-    <tr *matHeaderRowDef="displayedColumns" mat-header-row></tr>
-    <tr *matRowDef="let row; columns: displayedColumns;" mat-row></tr>
-  </table>
-</div>
-<div class="flex-column flex" mat-dialog-actions>
-  <div class="flex flex-row">
-    <mat-form-field appearance="outline">
-      <mat-label>Unit Code(s)</mat-label>
-      <input matInput [(ngModel)]="codesToAdd" />
-    </mat-form-field>
-    <button color="secondary" mat-button (click)="addUnitsByCode()">Add</button>
-    <span class="flex-grow"></span>
-    <button color="primary" mat-button (click)="doImport()">Import</button>
-    <button mat-button (click)="onCloseClick()">Close</button>
-  </div>
+<div class="mt-5 flex items-center gap-2">
+  <nz-input-group class="max-w-md" nzAddOnBefore="Unit code(s)">
+    <input nz-input [(ngModel)]="codesToAdd" (keyup.enter)="addUnitsByCode()" />
+  </nz-input-group>
+  <button nz-button (click)="addUnitsByCode()">Add</button>
+  <span class="flex-grow"></span>
+  <button nz-button nzType="primary" [disabled]="!unitsToImport.length" (click)="doImport()">
+    Import
+  </button>
+  <button nz-button (click)="onCloseClick()">Close</button>
 </div>

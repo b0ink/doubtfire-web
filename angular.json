@@ -46,6 +46,8 @@
               "includePaths": ["src"]
             },
             "styles": [
+              "node_modules/ng-zorro-antd/ng-zorro-antd.min.css",
+              "node_modules/primeicons/primeicons.css",
               "src/theme.scss",
               "src/styles.scss",
               "node_modules/@ctrl/ngx-emoji-mart/picker.css",

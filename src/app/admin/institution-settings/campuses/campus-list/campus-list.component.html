@@ -1,188 +1,124 @@
 <div class="campus-list-container">
-  <div class="header">
-    <div class="mt-6">
-      <h1 class="mb-0.5">Campuses</h1>
-      <p>Add new campuses or modify existing ones</p>
-    </div>
+  <div class="header mt-6">
+    <h1 class="mb-0.5">Campuses</h1>
+    <p>Add new campuses or modify existing ones</p>
   </div>
-  <table
-    #table
-    class=""
-    mat-table
-    matSort
-    [dataSource]="dataSource"
-    (matSortChange)="sortTableData($event)"
-  >
-    <!-- Name Column -->
-    <ng-container matColumnDef="name" [formGroup]="formData">
-      <th *matHeaderCellDef mat-header-cell mat-sort-header>Name</th>
-      <td *matCellDef="let campus" mat-cell>
-        @if (!editing(campus)) {
-          <div>
-            {{ campus.name }}
-          </div>
-        } @else {
-          <mat-form-field appearance="outline" class="data-entry">
-            <input formControlName="name" matInput placeholder="Name" required />
-          </mat-form-field>
-        }
-      </td>
-      <td *matFooterCellDef mat-footer-cell>
-        <mat-form-field appearance="outline" class="data-entry">
-          <input formControlName="name" matInput placeholder="Name" required />
-        </mat-form-field>
-      </td>
-    </ng-container>
 
-    <!-- Abbreviation Column -->
-    <ng-container matColumnDef="abbreviation" [formGroup]="formData">
-      <th *matHeaderCellDef mat-header-cell mat-sort-header>Abbreviation</th>
-      <td *matCellDef="let campus" mat-cell>
-        @if (!editing(campus)) {
-          <div>
-            {{ campus.abbreviation }}
-          </div>
-        } @else {
-          <mat-form-field appearance="outline" class="data-entry">
-            <input formControlName="abbreviation" matInput placeholder="Abbreviation" required />
-          </mat-form-field>
-        }
-      </td>
-      <td *matFooterCellDef mat-footer-cell>
-        <mat-form-field appearance="outline" class="data-entry">
-          <input formControlName="abbreviation" matInput placeholder="Abbreviation" required />
-        </mat-form-field>
-      </td>
-    </ng-container>
-
-    <!-- Mode Column -->
-    <ng-container matColumnDef="mode" [formGroup]="formData">
-      <th *matHeaderCellDef mat-header-cell mat-sort-header>Default Sync Mode</th>
-      <td *matCellDef="let campus" mat-cell>
-        @if (!editing(campus)) {
-          <div>
-            {{ campus.mode | titlecase }}
-          </div>
-        } @else {
-          <mat-form-field appearance="outline" class="data-entry">
-            <mat-label>Default Sync Mode</mat-label>
-            <mat-select formControlName="mode" required>
-              @for (mode of syncModes; track mode) {
-                <mat-option [value]="mode">
-                  {{ mode | titlecase }}
-                </mat-option>
+  <form [formGroup]="formData">
+    <nz-table #campusTable [nzData]="dataSource.data" [nzShowPagination]="false">
+      <thead>
+        <tr>
+          <th [nzSortFn]="compareName">Name</th>
+          <th [nzSortFn]="compareAbbreviation">Abbreviation</th>
+          <th [nzSortFn]="compareMode">Default Sync Mode</th>
+          <th [nzSortFn]="compareTimezone">Timezone</th>
+          <th [nzSortFn]="compareActive">Active</th>
+          <th nzRight></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (campus of campusTable.data; track campus.id) {
+          <tr>
+            <td>
+              @if (editing(campus)) {
+                <input formControlName="name" nz-input placeholder="Name" required />
+              } @else {
+                {{ campus.name }}
               }
-            </mat-select>
-          </mat-form-field>
+            </td>
+            <td>
+              @if (editing(campus)) {
+                <input
+                  formControlName="abbreviation"
+                  nz-input
+                  placeholder="Abbreviation"
+                  required
+                />
+              } @else {
+                {{ campus.abbreviation }}
+              }
+            </td>
+            <td>
+              @if (editing(campus)) {
+                <nz-select formControlName="mode" nzPlaceHolder="Default sync mode">
+                  @for (mode of syncModes; track mode) {
+                    <nz-option [nzLabel]="mode | titlecase" [nzValue]="mode"></nz-option>
+                  }
+                </nz-select>
+              } @else {
+                {{ campus.mode | titlecase }}
+              }
+            </td>
+            <td>
+              @if (editing(campus)) {
+                <input formControlName="timezone" nz-input placeholder="Australia/Melbourne" />
+              } @else {
+                {{ campus.timezone }}
+              }
+            </td>
+            <td>
+              @if (editing(campus)) {
+                <label formControlName="active" nz-checkbox></label>
+              } @else {
+                <label
+                  disabled
+                  nz-checkbox
+                  [ngModel]="campusIsActive(campus)"
+                  [ngModelOptions]="{standalone: true}"
+                ></label>
+              }
+            </td>
+            <td nzRight>
+              @if (editing(campus)) {
+                <div class="inline-flex">
+                  <button aria-label="Cancel edit" nz-button nzDanger (click)="cancelEdit()">
+                    <span nz-icon nzType="close"></span>
+                  </button>
+                  <button aria-label="Save campus" nz-button nzType="primary" (click)="submit()">
+                    <span nz-icon nzType="save"></span>
+                  </button>
+                  <button
+                    aria-label="Delete campus"
+                    nz-button
+                    nz-popconfirm
+                    nzDanger
+                    nzPopconfirmTitle="Delete this campus?"
+                    (nzOnConfirm)="deleteCampus(campus)"
+                  >
+                    <span nz-icon nzType="delete"></span>
+                  </button>
+                </div>
+              } @else {
+                <button aria-label="Edit campus" nz-button nzType="text" (click)="flagEdit(campus)">
+                  <span nz-icon nzType="edit"></span>
+                </button>
+              }
+            </td>
+          </tr>
         }
-      </td>
-      <td *matFooterCellDef mat-footer-cell>
-        <mat-form-field appearance="outline" class="data-entry">
-          <mat-label>Default Sync Mode</mat-label>
-          <mat-select formControlName="mode" required>
-            @for (mode of syncModes; track mode) {
-              <mat-option [value]="mode">
-                {{ mode | titlecase }}
-              </mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
-      </td>
-    </ng-container>
-
-    <!-- Timezone Column -->
-    <ng-container matColumnDef="timezone" [formGroup]="formData">
-      <th *matHeaderCellDef mat-header-cell mat-sort-header>Timezone</th>
-      <td *matCellDef="let campus" mat-cell>
-        @if (!editing(campus)) {
-          <div>
-            {{ campus.timezone }}
-          </div>
-        } @else {
-          <mat-form-field appearance="outline" class="data-entry">
-            <mat-label>Timezone</mat-label>
-
-            <input formControlName="timezone" matInput />
-          </mat-form-field>
-        }
-      </td>
-      <td *matFooterCellDef mat-footer-cell>
-        <mat-form-field appearance="outline" class="data-entry">
-          <mat-label>Timezone</mat-label>
-          <input formControlName="timezone" matInput placeholder="Eg. Australia/Melbourne" />
-        </mat-form-field>
-      </td>
-    </ng-container>
-
-    <!-- Active Column -->
-    <ng-container matColumnDef="active" [formGroup]="formData">
-      <th *matHeaderCellDef mat-header-cell mat-sort-header>Active</th>
-      <td *matCellDef="let campus" mat-cell>
-        @if (!editing(campus)) {
-          <div>
-            <mat-checkbox disabled [checked]="campus.active"> </mat-checkbox>
-          </div>
-        } @else {
-          <mat-checkbox formControlName="active" [checked]="campus.active"> </mat-checkbox>
-        }
-      </td>
-      <td *matFooterCellDef mat-footer-cell>
-        <mat-checkbox formControlName="active"> </mat-checkbox>
-      </td>
-    </ng-container>
-
-    <!-- Options Column -->
-    <ng-container matColumnDef="options" stickyEnd>
-      <th *matHeaderCellDef mat-header-cell></th>
-      <td *matCellDef="let campus" mat-cell>
-        @if (!editing(campus)) {
-          <div class="right">
-            <!-- <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
-            <mat-icon>more_vert</mat-icon>
-          </button> -->
-            <!-- <mat-menu #menu="matMenu"> -->
-            <button aria-label="edit campus" mat-icon-button (click)="flagEdit(campus)">
-              <mat-icon>edit</mat-icon>
-            </button>
-            <!-- </mat-menu> -->
-          </div>
-        } @else {
-          <div class="edit-actions right">
-            <span>
-              <button aria-label="cancel edit" color="warn" mat-icon-button (click)="cancelEdit()">
-                <mat-icon>cancel</mat-icon>
+        @if (!selected) {
+          <tr>
+            <td><input formControlName="name" nz-input placeholder="Name" required /></td>
+            <td>
+              <input formControlName="abbreviation" nz-input placeholder="Abbreviation" required />
+            </td>
+            <td>
+              <nz-select class="w-full" formControlName="mode" nzPlaceHolder="Default sync mode">
+                @for (mode of syncModes; track mode) {
+                  <nz-option [nzLabel]="mode | titlecase" [nzValue]="mode"></nz-option>
+                }
+              </nz-select>
+            </td>
+            <td><input formControlName="timezone" nz-input placeholder="Australia/Melbourne" /></td>
+            <td><label formControlName="active" nz-checkbox></label></td>
+            <td nzRight>
+              <button aria-label="Add campus" nz-button nzType="primary" (click)="submit()">
+                <span nz-icon nzType="plus"></span>
               </button>
-              <button
-                aria-label="submit changes"
-                color="primary"
-                mat-icon-button
-                (click)="submit()"
-              >
-                <mat-icon>save</mat-icon>
-              </button>
-              <button
-                aria-label="delete campus"
-                color="warn"
-                mat-icon-button
-                (click)="deleteCampus(campus)"
-              >
-                <mat-icon>delete</mat-icon>
-              </button>
-            </span>
-          </div>
+            </td>
+          </tr>
         }
-      </td>
-      <td *matFooterCellDef mat-footer-cell>
-        <div class="edit-actions right">
-          <button mat-icon-button (click)="submit()">
-            <mat-icon>add</mat-icon>
-          </button>
-        </div>
-      </td>
-    </ng-container>
-
-    <tr *matHeaderRowDef="columns" mat-header-row></tr>
-    <tr *matRowDef="let row; columns: columns" mat-row></tr>
-    <tr *matFooterRowDef="columns" mat-footer-row [hidden]="selected"></tr>
-  </table>
+      </tbody>
+    </nz-table>
+  </form>
 </div>

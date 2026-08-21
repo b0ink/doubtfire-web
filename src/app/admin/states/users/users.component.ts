@@ -1,14 +1,4 @@
-import {
-  AfterViewInit,
-  ChangeDetectionStrategy,
-  Component,
-  OnDestroy,
-  OnInit,
-  ViewChild,
-} from '@angular/core';
-import {MatPaginator} from '@angular/material/paginator';
-import {MatSort, Sort} from '@angular/material/sort';
-import {MatTable, MatTableDataSource} from '@angular/material/table';
+import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
 import {Subscription} from 'rxjs';
 import {User} from 'src/app/api/models/doubtfire-model';
 import {UserService} from 'src/app/api/models/doubtfire-model';
@@ -25,20 +15,8 @@ import {DoubtfireConstants} from 'src/app/config/constants/doubtfire-constants';
   standalone: false,
 })
 export class FUsersComponent implements OnInit, AfterViewInit, OnDestroy {
-  @ViewChild(MatTable, {static: false}) table: MatTable<User>;
-  @ViewChild(MatSort, {static: false}) sort: MatSort;
-  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
-
-  displayedColumns: string[] = [
-    'avatar',
-    'firstName',
-    'lastName',
-    'username',
-    'email',
-    'systemRole',
-  ];
-  public dataSource: MatTableDataSource<User>;
-  public filter: string;
+  public users: User[] = [];
+  public filter = '';
   dataload: boolean;
 
   private subscriptions: Subscription[] = [];
@@ -53,7 +31,6 @@ export class FUsersComponent implements OnInit, AfterViewInit, OnDestroy {
     private alerts: AlertService,
   ) {
     this.dataload = false;
-    this.dataSource = new MatTableDataSource<User>([]);
   }
 
   ngOnInit(): void {
@@ -66,14 +43,11 @@ export class FUsersComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    this.dataSource.data = this.userService.cache.currentValuesClone();
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
-    this.dataSource.filterPredicate = (data, filter: string) => data.matches(filter);
+    this.users = this.userService.cache.currentValuesClone();
 
     this.subscriptions.push(
       this.userService.cache.values.subscribe((users) => {
-        this.dataSource.data = users;
+        this.users = [...users];
       }),
     );
   }
@@ -116,37 +90,14 @@ export class FUsersComponent implements OnInit, AfterViewInit, OnDestroy {
     this.editProfileDialogService.openDialog(userToShow, 'edit');
   }
 
-  public compare(a: number | string, b: number | string, isAsc: boolean): number {
-    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+  public get filteredUsers(): User[] {
+    const filter = this.filter.trim().toLowerCase();
+    return filter ? this.users.filter((user) => user.matches(filter)) : this.users;
   }
 
-  public sortData(sort: Sort) {
-    const data = this.dataSource.data;
-
-    if (!sort.active || sort.direction === '') {
-      this.dataSource.data = data;
-      return;
-    }
-
-    this.dataSource.data = data.sort((a, b) => {
-      const isAsc = sort.direction === 'asc';
-
-      switch (sort.active) {
-        case 'id':
-          return this.compare(a.id, b.id, isAsc);
-        case 'firstName':
-          return this.compare(a.firstName, b.firstName, isAsc);
-        case 'lastName':
-          return this.compare(a.lastName, b.lastName, isAsc);
-        case 'systemRole':
-          return this.compare(a.systemRole, b.systemRole, isAsc);
-        default:
-          return 0;
-      }
-    });
-  }
-
-  applyFilter(filterValue: string) {
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-  }
+  readonly compareFirstName = (a: User, b: User) => a.firstName.localeCompare(b.firstName);
+  readonly compareLastName = (a: User, b: User) => a.lastName.localeCompare(b.lastName);
+  readonly compareUsername = (a: User, b: User) => a.username.localeCompare(b.username);
+  readonly compareEmail = (a: User, b: User) => a.email.localeCompare(b.email);
+  readonly compareSystemRole = (a: User, b: User) => a.systemRole.localeCompare(b.systemRole);
 }

@@ -1,5 +1,5 @@
+import {NzModalRef} from 'ng-zorro-antd/modal';
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
-import {MatDialogRef} from '@angular/material/dialog';
 import {TeachingPeriod} from 'src/app/api/models/teaching-period';
 import {TeachingPeriodService} from 'src/app/api/services/teaching-period.service';
 import {UnitService} from 'src/app/api/services/unit.service';
@@ -13,14 +13,13 @@ import {AlertService} from 'src/app/common/services/alert.service';
 })
 export class CreateNewUnitModalContentComponent implements OnInit {
   constructor(
-    private dialogRef: MatDialogRef<CreateNewUnitModalContentComponent>,
+    private modalRef: NzModalRef<CreateNewUnitModalContentComponent>,
     private unitService: UnitService,
     private teachingPeriodsService: TeachingPeriodService,
     private alerts: AlertService,
   ) {}
   showDates = false;
-  startDate: Date;
-  endDate: Date;
+  dateRange: Date[] = [];
   selectedTeachingPeriod: number = null;
   teachingPeriods: TeachingPeriod[];
 
@@ -41,8 +40,8 @@ export class CreateNewUnitModalContentComponent implements OnInit {
       newUnit = {
         code: unit.unitCode,
         name: unit.unitName,
-        start_date: this.startDate,
-        end_date: this.endDate,
+        start_date: this.dateRange[0],
+        end_date: this.dateRange[1],
       };
     } else {
       newUnit = {
@@ -59,7 +58,7 @@ export class CreateNewUnitModalContentComponent implements OnInit {
       .subscribe({
         next: (unit) => {
           this.alerts.success(`Unit ${unit.code} - ${unit.name} has been created.`);
-          this.dialogRef.close(unit);
+          this.modalRef.close(unit);
         },
         error: (error) => {
           this.alerts.error(`Unit Creation Failed: ${error}`);
@@ -69,6 +68,7 @@ export class CreateNewUnitModalContentComponent implements OnInit {
   public handleChangeTeachingPeriod(teachingPeriod: number | string): void {
     if (typeof teachingPeriod === 'string') {
       this.showDates = true;
+      this.selectedTeachingPeriod = null;
     } else {
       this.showDates = false;
       this.selectedTeachingPeriod = teachingPeriod;

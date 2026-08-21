@@ -1,3 +1,39 @@
-mat-form-field {
-  padding: 1rem;
+:host {
+  display: block;
+}
+.dialog-intro {
+  margin: 0 0 1.5rem;
+  color: var(--p-text-muted-color);
+}
+
+.dialog-fields {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.field {
+  display: grid;
+  gap: 0.5rem;
+  font-weight: 600;
+
+  input {
+    width: 100%;
+    font-weight: 400;
+  }
+
+  small {
+    color: var(--p-text-muted-color);
+    font-weight: 400;
+  }
+}
+
+.required {
+  color: var(--p-red-500);
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 2rem;
 }

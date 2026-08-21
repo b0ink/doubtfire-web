@@ -1,8 +1,8 @@
 //
 // Modal to show Doubtfire version info
 //
-import {ChangeDetectionStrategy, Component, Inject, Injectable, OnInit} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
+import {DialogService, DynamicDialogConfig, DynamicDialogRef} from 'primeng/dynamicdialog';
+import {ChangeDetectionStrategy, Component, Injectable, OnInit} from '@angular/core';
 import {Observable} from 'rxjs';
 import {D2lAssessmentMapping} from 'src/app/api/models/d2l/d2l_assessment_mapping';
 import {D2lAssessmentMappingService} from 'src/app/api/models/doubtfire-model';
@@ -17,15 +17,18 @@ import {AlertService} from 'src/app/common/services/alert.service';
   standalone: false,
 })
 export class D2lUnitDetailsFormComponent implements OnInit {
-  public d2lDataMapping: D2lAssessmentMapping = new D2lAssessmentMapping(this.data);
+  public data: Unit;
+  public d2lDataMapping: D2lAssessmentMapping;
 
   constructor(
-    @Inject(MAT_DIALOG_DATA) public data: Unit,
-    @Inject(MatDialogRef<D2lUnitDetailsFormComponent>)
-    public dialogRef: MatDialogRef<D2lUnitDetailsFormComponent>,
+    public config: DynamicDialogConfig<Unit>,
+    public dialogRef: DynamicDialogRef,
     private alertService: AlertService,
     public d2lAssessmentMappingService: D2lAssessmentMappingService,
-  ) {}
+  ) {
+    this.data = this.config.data;
+    this.d2lDataMapping = new D2lAssessmentMapping(this.data);
+  }
 
   ngOnInit(): void {
     this.data.loadD2lMapping().subscribe({
@@ -112,13 +115,16 @@ export class D2lUnitDetailsFormComponent implements OnInit {
 // eslint-disable-next-line max-classes-per-file
 @Injectable()
 export class D2lUnitDetailsModal {
-  constructor(public dialog: MatDialog) {}
+  constructor(public dialogService: DialogService) {}
 
   public open(unit: Unit): void {
     // Show dialog while the data above is being fetched
-    this.dialog.open(D2lUnitDetailsFormComponent, {
-      width: '600px',
+    this.dialogService.open(D2lUnitDetailsFormComponent, {
+      header: 'D2L Unit Details',
       data: unit,
+      modal: true,
+      width: '600px',
+      dismissableMask: true,
     });
   }
 }

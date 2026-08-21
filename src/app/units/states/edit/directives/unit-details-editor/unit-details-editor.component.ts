@@ -1,5 +1,4 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
-import {MatSlideToggleChange} from '@angular/material/slide-toggle';
 import {OverseerImage, UnitService} from 'src/app/api/models/doubtfire-model';
 import {TaskDefinition} from 'src/app/api/models/task-definition';
 import {TeachingPeriod} from 'src/app/api/models/teaching-period';
@@ -37,7 +36,6 @@ export class UnitDetailsEditorComponent implements OnInit {
   public taskDefinitions: TaskDefinition[];
   public dockerImages: OverseerImage[];
   public editingGradeId: string | null = null;
-  public readonly gradeDefinitionColumns = ['index', 'label', 'abbreviation', 'order', 'actions'];
   private editingGradeDefinitions: GradeDefinition[] | null = null;
   private newGradeId: string | null = null;
 
@@ -232,8 +230,8 @@ export class UnitDetailsEditorComponent implements OnInit {
 
   private updatingAssessInPortfolio: boolean = false;
 
-  onToggleAssessInPortfolio(event: MatSlideToggleChange) {
-    if (!event.checked || this.updatingAssessInPortfolio) {
+  onToggleAssessInPortfolio(checked: boolean) {
+    if (!checked || this.updatingAssessInPortfolio) {
       return false;
     }
 

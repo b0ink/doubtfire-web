@@ -1,15 +1,5 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  Inject,
-  Injectable,
-  OnInit,
-  ViewChild,
-} from '@angular/core';
-import {FormControl} from '@angular/forms';
-import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
-import {MatTable, MatTableDataSource} from '@angular/material/table';
-import {Observable, map, startWith} from 'rxjs';
+import {NZ_MODAL_DATA, NzModalRef, NzModalService} from 'ng-zorro-antd/modal';
+import {ChangeDetectionStrategy, Component, Inject, Injectable, OnInit} from '@angular/core';
 import {
   TeachingPeriod,
   Unit,
@@ -30,21 +20,19 @@ interface UnitImportData {
   convenor: User;
   relatedUnits?: {value: Unit; text: string}[];
   done?: boolean;
-  convenorFormControl: FormControl<User>;
-  filteredStaff: Observable<User[]>;
 }
 
 @Injectable()
 export class TeachingPeriodUnitImportService {
-  constructor(public dialog: MatDialog) {}
+  constructor(public modal: NzModalService) {}
 
   openImportUnitsDialog(teachingPeriod: TeachingPeriod): void {
-    const dialogRef = this.dialog.open(TeachingPeriodUnitImportDialogComponent, {
-      data: {teachingPeriod: teachingPeriod},
-    });
-
-    dialogRef.afterClosed().subscribe(() => {
-      console.log('The dialog was closed');
+    this.modal.create({
+      nzTitle: `Import units into ${teachingPeriod.name}`,
+      nzContent: TeachingPeriodUnitImportDialogComponent,
+      nzData: {teachingPeriod},
+      nzFooter: null,
+      nzWidth: 1100,
     });
   }
 }
@@ -61,17 +49,12 @@ export class TeachingPeriodUnitImportService {
   standalone: false,
 })
 export class TeachingPeriodUnitImportDialogComponent implements OnInit {
-  @ViewChild(MatTable, {static: true}) table: MatTable<UnitImportData>;
-
   /**
    * The list of unit related data for the import.
    */
   public unitsToImport: UnitImportData[] = [];
 
-  public dataSource = new MatTableDataSource(this.unitsToImport);
-
   public teachingStaff: User[];
-  public filteredOptions: Observable<User[]>;
 
   public allUnits: Unit[];
 
@@ -80,25 +63,12 @@ export class TeachingPeriodUnitImportDialogComponent implements OnInit {
    */
   public codesToAdd: string = '';
 
-  public displayedColumns: string[] = [
-    'unitCode',
-    'sourceUnit',
-    'unitName',
-    'convenor',
-    'status',
-    'actions',
-  ];
-
-  public filteredStaffFor(unitToImport: UnitImportData): Observable<User[]> {
-    return unitToImport.filteredStaff;
-  }
-
   constructor(
-    public dialogRef: MatDialogRef<TeachingPeriodUnitImportData>,
+    public modalRef: NzModalRef<TeachingPeriodUnitImportDialogComponent>,
     private userService: UserService,
     private unitService: UnitService,
     private globalStateService: GlobalStateService,
-    @Inject(MAT_DIALOG_DATA) public data: TeachingPeriodUnitImportData,
+    @Inject(NZ_MODAL_DATA) public data: TeachingPeriodUnitImportData,
   ) {}
 
   ngOnInit(): void {
@@ -118,16 +88,6 @@ export class TeachingPeriodUnitImportDialogComponent implements OnInit {
     });
   }
 
-  displayFn(user: User): string {
-    return user && user.name ? user.name : '';
-  }
-
-  private _filter(name: string): User[] {
-    const filterValue = name.toLowerCase();
-
-    return this.teachingStaff.filter((option) => option.name.toLowerCase().includes(filterValue));
-  }
-
   private loadAllUnits() {
     // Load all units
     this.unitService.query(undefined, {params: {include_in_active: true}}).subscribe({
@@ -142,7 +102,7 @@ export class TeachingPeriodUnitImportDialogComponent implements OnInit {
   }
 
   public onCloseClick(): void {
-    this.dialogRef.close();
+    this.modalRef.close();
   }
 
   public changeSourceUnit(value: UnitImportData, unit: Unit) {
@@ -199,9 +159,6 @@ export class TeachingPeriodUnitImportDialogComponent implements OnInit {
    */
   public removeUnitToAdd(value: UnitImportData) {
     this.unitsToImport = this.unitsToImport.filter((u) => u.unitCode !== value.unitCode);
-    // Ensure we use the new array object in the data source
-    this.dataSource.data = this.unitsToImport;
-    this.table.renderRows();
   }
 
   public addUnitsByCode() {
@@ -216,28 +173,16 @@ export class TeachingPeriodUnitImportDialogComponent implements OnInit {
 
       const relatedUnits = this.relatedUnits(code);
       const sourceUnit = relatedUnits.length > 0 ? relatedUnits[0].value : null;
-      const formControl: FormControl<User> = new FormControl(
-        sourceUnit?.mainConvenor?.user || sourceUnit?.mainConvenorUser,
-      );
-
       this.unitsToImport.push({
         unitCode: code,
         sourceUnit: sourceUnit,
         convenor: sourceUnit?.mainConvenor?.user || sourceUnit?.mainConvenorUser,
         relatedUnits: relatedUnits,
-        convenorFormControl: formControl,
-        filteredStaff: formControl.valueChanges.pipe(
-          startWith(''),
-          map((value) => {
-            const name = typeof value === 'string' ? value : value?.name;
-            return name ? this._filter(name as string) : this.teachingStaff;
-          }),
-        ),
       });
     }
 
     this.codesToAdd = '';
-    this.table.renderRows();
+    this.unitsToImport = [...this.unitsToImport];
   }
 
   private importExistingUnit(unitToImport: UnitImportData, idx: number) {

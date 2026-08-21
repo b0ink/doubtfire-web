@@ -1,3 +1,4 @@
+import {NzModalService} from 'ng-zorro-antd/modal';
 import {HttpClient} from '@angular/common/http';
 import {
   AfterViewInit,
@@ -7,9 +8,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import {UntypedFormControl, Validators} from '@angular/forms';
-import {MatDialog} from '@angular/material/dialog';
-import {MatSort, Sort} from '@angular/material/sort';
-import {MatTable, MatTableDataSource} from '@angular/material/table';
+import {MatTableDataSource} from '@angular/material/table';
 import {finalize} from 'rxjs';
 import {OverseerImage, OverseerImageService} from 'src/app/api/models/doubtfire-model';
 import {EntityFormComponent} from 'src/app/common/entity-form/entity-form.component';
@@ -30,13 +29,11 @@ export class OverseerImageListComponent
 {
   @ViewChild('textDialog') textDialog!: TemplateRef<object>;
 
-  @ViewChild(MatTable, {static: true}) table: MatTable<OverseerImage>;
-  @ViewChild(MatSort, {static: true}) sort: MatSort;
-
   // Set up the table
   columns: string[] = ['name', 'tag', 'pull', 'last-pulled', 'status', 'options'];
   overseerImages: OverseerImage[] = new Array<OverseerImage>();
   dataSource = new MatTableDataSource(this.overseerImages);
+  dialogText = '';
   loading = false;
   loadingImages = true;
   skeletonRows = Array.from({length: 2}, (_, index) => index);
@@ -48,7 +45,7 @@ export class OverseerImageListComponent
   constructor(
     private overseerImageService: OverseerImageService,
     private alerts: AlertService,
-    private dialog: MatDialog,
+    private modal: NzModalService,
     private sidekiqProgressModalService: SidekiqProgressModalService,
     private httpClient: HttpClient,
   ) {
@@ -97,7 +94,7 @@ export class OverseerImageListComponent
     } else {
       this.overseerImages.push(value);
     }
-    this.dataSource.sort = this.sort;
+    this.dataSource.data = [...this.overseerImages];
   }
 
   // This method is called when the form is submitted,
@@ -132,33 +129,6 @@ export class OverseerImageListComponent
     );
   }
 
-  // Sorting function to sort data when sort
-  // event is triggered
-  sortTableData(sort: Sort) {
-    if (!sort.active || sort.direction === '') {
-      return;
-    }
-    switch (sort.active) {
-      case 'name':
-      case 'tag':
-        return super.sortTableData(sort);
-      case 'last-pulled':
-        this.dataSource.data = [...this.dataSource.data].sort((a, b) =>
-          this.sortCompare(
-            this.sortDateValue(a.lastPulledDate),
-            this.sortDateValue(b.lastPulledDate),
-            sort.direction === 'asc',
-          ),
-        );
-        return;
-      case 'status':
-        this.dataSource.data = [...this.dataSource.data].sort((a, b) =>
-          this.sortCompare(a.pulledImageStatus, b.pulledImageStatus, sort.direction === 'asc'),
-        );
-        return;
-    }
-  }
-
   private sortDateValue(value: string): number {
     if (!value) {
       return 0;
@@ -168,8 +138,19 @@ export class OverseerImageListComponent
   }
 
   public showDialog(image: OverseerImage) {
-    this.dialog.open(this.textDialog, {
-      data: {text: image.pulledImageText},
+    this.dialogText = image.pulledImageText;
+    this.modal.create({
+      nzTitle: 'Overseer image output',
+      nzContent: this.textDialog,
+      nzFooter: null,
+      nzWidth: 640,
     });
   }
+
+  readonly compareName = (a: OverseerImage, b: OverseerImage) => a.name.localeCompare(b.name);
+  readonly compareTag = (a: OverseerImage, b: OverseerImage) => a.tag.localeCompare(b.tag);
+  readonly compareLastPulled = (a: OverseerImage, b: OverseerImage) =>
+    this.sortDateValue(a.lastPulledDate) - this.sortDateValue(b.lastPulledDate);
+  readonly compareStatus = (a: OverseerImage, b: OverseerImage) =>
+    (a.pulledImageStatus ?? '').localeCompare(b.pulledImageStatus ?? '');
 }

@@ -1,29 +1,7 @@
-th.mat-column-unitCode,
-td.mat-column-unitCode {
-  width: 10em;
+:host ::ng-deep .ant-table-cell {
+  vertical-align: top;
 }
 
-th.mat-column-sourceUnit,
-td.mat-column-sourceUnit {
-  width: 15em;
-}
-
-th.mat-column-unitName,
-td.mat-column-unitName {
-  width: 15em;
-}
-
-th.mat-column-convenor,
-td.mat-column-convenor {
-  width: 15em;
-}
-
-th.mat-column-status,
-td.mat-column-status {
-  width: 15em;
-}
-
-th.mat-column-actions,
-td.mat-column-actions {
-  width: 5em;
+:host ::ng-deep .ant-table-cell:first-child {
+  width: 10rem;
 }

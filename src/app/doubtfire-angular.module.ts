@@ -10,6 +10,7 @@ import {
   PieChartComponent,
 } from '@glitchtip/ng-charts';
 import {CodeEditorModule} from '@ngstack/code-editor';
+import Aura from '@primeuix/themes/aura';
 import * as Sentry from '@sentry/angular';
 import {
   GANTT_GLOBAL_CONFIG,
@@ -25,10 +26,14 @@ import {enAU} from 'date-fns/locale';
 import player from 'lottie-web';
 import {PdfViewerModule} from 'ng2-pdf-viewer';
 import {FlexLayoutModule} from 'ng-flex-layout';
+import {provideNzDateFnsAdapter} from 'ng-zorro-antd/core/time';
+import {en_AU, provideNzI18n} from 'ng-zorro-antd/i18n';
 import {LottieComponent, provideLottieOptions} from 'ngx-lottie';
 // TODO: replace back to original ngx-monaco-editor-v2 once it supports angular 22
 import {MonacoEditorModule} from 'ngx-monaco-editor-v2-alternative';
 import {NgxSkeletonLoaderModule} from 'ngx-skeleton-loader';
+import {providePrimeNG} from 'primeng/config';
+import {DialogService} from 'primeng/dynamicdialog';
 import {environment} from 'src/environments/environment';
 // import {GradeTaskModalComponent} from './tasks/modals/grade-task-modal/grade-task-modal.component';
 // import {PrivacyPolicy} from './config/privacy-policy/privacy-policy';
@@ -103,6 +108,7 @@ import {
   TaskCommentComposerComponent,
 } from 'src/app/tasks/task-comment-composer/task-comment-composer.component';
 import {EditProfileComponent} from './account/edit-profile/edit-profile.component';
+import {AdminNgZorroModule} from './admin/admin-ng-zorro.module';
 import {ActivityTypeListComponent} from './admin/institution-settings/activity-type-list/activity-type-list.component';
 import {CampusListComponent} from './admin/institution-settings/campuses/campus-list/campus-list.component';
 import {InstitutionSettingsComponent} from './admin/institution-settings/institution-settings.component';
@@ -346,6 +352,7 @@ import {
   D2lUnitDetailsModal,
 } from './units/states/edit/directives/unit-details-editor/d2l-details-form/d2l-unit-details-form.component';
 import {UnitDetailsEditorComponent} from './units/states/edit/directives/unit-details-editor/unit-details-editor.component';
+import {UnitDetailsPrimeNgModule} from './units/states/edit/directives/unit-details-editor/unit-details-primeng.module';
 import {UnitGroupSetEditorComponent} from './units/states/edit/directives/unit-group-set-editor/unit-group-set-editor.component';
 import {BulkImportStaffModalComponent} from './units/states/edit/directives/unit-staff-editor/bulk-import-staff-modal/bulk-import-staff-modal.component';
 import {UnitStaffEditorComponent} from './units/states/edit/directives/unit-staff-editor/unit-staff-editor.component';
@@ -696,6 +703,16 @@ const DEFAULT_TOOLTIP_OPTIONS: MatTooltipDefaultOptions = {
     LegacyRoutePlaceholderComponent,
   ],
   providers: [
+    providePrimeNG({
+      ripple: true,
+      theme: {
+        preset: Aura,
+        options: {darkModeSelector: false},
+      },
+    }),
+    provideNzI18n(en_AU),
+    DialogService,
+    provideNzDateFnsAdapter({locale: enAU, firstDayOfWeek: 1}),
     // Services we provide
     AlertService,
     MarkedPipe,
@@ -806,6 +823,8 @@ const DEFAULT_TOOLTIP_OPTIONS: MatTooltipDefaultOptions = {
     },
   ],
   imports: [
+    AdminNgZorroModule,
+    UnitDetailsPrimeNgModule,
     FlexLayoutModule,
     BrowserModule,
     BrowserAnimationsModule,

@@ -1,7 +1,6 @@
-import {AfterViewInit, ChangeDetectionStrategy, Component, ViewChild} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component} from '@angular/core';
 import {UntypedFormControl, Validators} from '@angular/forms';
-import {MatSort, Sort} from '@angular/material/sort';
-import {MatTable, MatTableDataSource} from '@angular/material/table';
+import {MatTableDataSource} from '@angular/material/table';
 import {finalize} from 'rxjs';
 import {ActivityType, ActivityTypeService} from 'src/app/api/models/doubtfire-model';
 import {EntityFormComponent} from 'src/app/common/entity-form/entity-form.component';
@@ -18,9 +17,6 @@ export class ActivityTypeListComponent
   extends EntityFormComponent<ActivityType>
   implements AfterViewInit
 {
-  @ViewChild(MatTable, {static: true}) table: MatTable<ActivityType>;
-  @ViewChild(MatSort, {static: true}) sort: MatSort;
-
   // Set up the table
   columns: string[] = ['name', 'abbreviation', 'options'];
   activityTypes: ActivityType[] = new Array<ActivityType>();
@@ -73,8 +69,7 @@ export class ActivityTypeListComponent
     } else {
       this.activityTypes.push(value);
     }
-    this.dataSource.sort = this.sort;
-    this.table.renderRows();
+    this.dataSource.data = [...this.activityTypes];
   }
 
   // This method is called when the form is submitted,
@@ -94,16 +89,7 @@ export class ActivityTypeListComponent
     });
   }
 
-  // Sorting function to sort data when sort
-  // event is triggered
-  sortTableData(sort: Sort) {
-    if (!sort.active || sort.direction === '') {
-      return;
-    }
-    switch (sort.active) {
-      case 'name':
-      case 'abbreviation':
-        return super.sortTableData(sort);
-    }
-  }
+  readonly compareName = (a: ActivityType, b: ActivityType) => a.name.localeCompare(b.name);
+  readonly compareAbbreviation = (a: ActivityType, b: ActivityType) =>
+    a.abbreviation.localeCompare(b.abbreviation);
 }
